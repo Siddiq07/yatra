@@ -4,677 +4,304 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Festival Results Management System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== RESET & BASE STYLES ===== */
+        /* ===== SIMPLE CSS ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #7209b7;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --warning: #f8961e;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --border: #dee2e6;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: var(--dark);
+            font-family: Arial, sans-serif;
             line-height: 1.6;
+            background: #f0f2f5;
+            color: #333;
         }
-
+        
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
-        /* ===== UTILITY CLASSES ===== */
+        
         .hidden {
             display: none !important;
         }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .mb-1 { margin-bottom: 0.5rem; }
-        .mb-2 { margin-bottom: 1rem; }
-        .mb-3 { margin-bottom: 1.5rem; }
-        .mb-4 { margin-bottom: 2rem; }
-
-        .mt-1 { margin-top: 0.5rem; }
-        .mt-2 { margin-top: 1rem; }
-        .mt-3 { margin-top: 1.5rem; }
-        .mt-4 { margin-top: 2rem; }
-
-        .d-flex {
-            display: flex;
-        }
-
-        .align-center {
-            align-items: center;
-        }
-
-        .justify-between {
-            justify-content: space-between;
-        }
-
-        .flex-wrap {
-            flex-wrap: wrap;
-        }
-
-        .gap-1 { gap: 0.5rem; }
-        .gap-2 { gap: 1rem; }
-        .gap-3 { gap: 1.5rem; }
-
-        .w-100 {
-            width: 100%;
-        }
-
-        /* ===== BUTTONS ===== */
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.875rem;
-        }
-
-        .btn-lg {
-            padding: 14px 28px;
-            font-size: 1.125rem;
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        /* ===== HEADER ===== */
+        
+        /* Header */
         .header {
-            background: white;
-            border-radius: 15px;
-            padding: 20px 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo i {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .nav {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .nav a {
-            text-decoration: none;
-            color: var(--gray);
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-
-        .nav a:hover,
-        .nav a.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: #2c3e50;
             color: white;
-        }
-
-        /* ===== PAGES ===== */
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== HOME PAGE ===== */
-        .hero {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .hero-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-content p {
-            color: var(--gray);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .feature-card i {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ===== FORMS ===== */
-        .form-container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-            box-shadow: var(--shadow);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        /* ===== TABLES ===== */
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            overflow-x: auto;
-            box-shadow: var(--shadow);
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .data-table td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table tr:hover {
-            background: rgba(67, 97, 238, 0.05);
-        }
-
-        /* ===== BADGES ===== */
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .position-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            font-weight: bold;
-            color: white;
-        }
-
-        .position-1 { background: #FFD700; }
-        .position-2 { background: #C0C0C0; }
-        .position-3 { background: #CD7F32; }
-        .position-other { background: var(--primary); }
-
-        /* ===== CARDS VIEW ===== */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-
-        .result-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            border-top: 5px solid var(--primary);
-            transition: transform 0.3s ease;
-        }
-
-        .result-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .card-title h4 {
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-
-        /* ===== TABS ===== */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            border-radius: 8px 8px 0 0;
-            font-weight: 600;
-            color: var(--gray);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* ===== STATS CARDS ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            border-top: 5px solid var(--primary);
-        }
-
-        .stat-card i {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .stat-card h3 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-
-        /* ===== SEARCH & FILTERS ===== */
-        .search-box {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .filters {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .filters select {
-            padding: 10px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-            min-width: 180px;
-        }
-
-        /* ===== ALERTS & MESSAGES ===== */
-        .alert {
             padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
+        }
+        
+        .header-content {
             display: flex;
+            justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+        }
+        
+        .nav {
+            display: flex;
             gap: 10px;
         }
-
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+        }
+        
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav a.active {
+            background: #3498db;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        /* Forms */
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Grid */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .col {
+            flex: 1;
+            padding: 0 10px;
+            min-width: 250px;
+        }
+        
+        /* Alerts */
+        .alert {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
         .alert-success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-
-        .alert-danger {
+        
+        .alert-error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-
-        .alert-warning {
+        
+        /* Search & Filters */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filters select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
             background: #fff3cd;
             color: #856404;
-            border: 1px solid #ffeaa7;
         }
-
-        .alert-info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        /* ===== FOOTER ===== */
+        
+        /* Footer */
         .footer {
             text-align: center;
-            padding: 30px;
-            color: white;
+            padding: 20px;
             margin-top: 30px;
+            color: #7f8c8d;
+            border-top: 1px solid #ddd;
         }
-
-        .social-links {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .social-links a {
-            color: white;
-            font-size: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .social-links a:hover {
-            transform: translateY(-3px);
-        }
-
-        /* ===== MODAL ===== */
+        
+        /* Modal */
         .modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            background: rgba(0,0,0,0.5);
+            display: none;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
         }
-
+        
         .modal.active {
             display: flex;
         }
-
+        
         .modal-content {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
+            padding: 20px;
+            border-radius: 8px;
             max-width: 500px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: var(--shadow);
         }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        /* ===== LOADING SPINNER ===== */
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ===== RESPONSIVE DESIGN ===== */
+        
+        /* Responsive */
         @media (max-width: 768px) {
-            .hero {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .header {
+            .header-content {
                 flex-direction: column;
-                gap: 20px;
-                text-align: center;
+                gap: 15px;
             }
-
+            
             .nav {
-                flex-direction: column;
-                width: 100%;
+                flex-wrap: wrap;
             }
-
-            .nav a {
-                width: 100%;
-                text-align: center;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
+            
             .filters {
                 flex-direction: column;
             }
-
-            .tabs {
-                flex-wrap: wrap;
-            }
-
-            .tab-btn {
-                flex: 1;
-                min-width: 120px;
+            
+            .filters select {
+                width: 100%;
             }
         }
     </style>
@@ -682,169 +309,107 @@
 <body>
     <div class="container">
         <!-- Header -->
-        <header class="header d-flex justify-between align-center flex-wrap">
-            <div class="logo">
-                <i class="fas fa-trophy"></i>
-                <h1>Festival Results 2024</h1>
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🏆 Festival Results</h1>
+                </div>
+                <nav class="nav">
+                    <a href="#" data-page="home" class="active">Home</a>
+                    <a href="#" data-page="results">View Results</a>
+                    <a href="#" data-page="admin">Admin</a>
+                    <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
+                </nav>
             </div>
-            <nav class="nav">
-                <a href="#" data-page="home" class="active">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <a href="#" data-page="results">
-                    <i class="fas fa-chart-line"></i> View Results
-                </a>
-                <a href="#" data-page="admin">
-                    <i class="fas fa-user-shield"></i> Admin
-                </a>
-                <button id="logoutBtn" class="btn btn-danger hidden">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </nav>
         </header>
 
         <!-- Home Page -->
-        <div id="homePage" class="page active">
-            <section class="hero">
-                <div class="hero-content">
-                    <h2>Celebrating Excellence & Achievement</h2>
-                    <p>Welcome to the official Festival Results Portal. View published results, track leaderboards, and celebrate achievements.</p>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" data-page="results">
-                            <i class="fas fa-chart-line"></i> View Results
-                        </button>
-                        <button class="btn btn-secondary" data-page="admin">
-                            <i class="fas fa-user-shield"></i> Admin Login
-                        </button>
+        <div id="homePage" class="page">
+            <div class="card">
+                <h2>Welcome to Festival Results Portal</h2>
+                <p class="mb-15">Manage and view festival competition results in real-time.</p>
+                <div>
+                    <button class="btn btn-primary" data-page="results">View Results</button>
+                    <button class="btn btn-secondary" data-page="admin">Admin Login</button>
+                </div>
+            </div>
+            
+            <div class="row mt-20">
+                <div class="col">
+                    <div class="card">
+                        <h3>📊 Live Results</h3>
+                        <p>Real-time updates of competition results</p>
                     </div>
                 </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-                         alt="Festival Celebration" style="width:100%; border-radius:10px;">
+                <div class="col">
+                    <div class="card">
+                        <h3>🔍 Easy Search</h3>
+                        <p>Find results by name or event</p>
+                    </div>
                 </div>
-            </section>
-
-            <section class="features">
-                <div class="feature-card">
-                    <i class="fas fa-medal"></i>
-                    <h3>Live Results</h3>
-                    <p>Real-time updates of all competition results</p>
+                <div class="col">
+                    <div class="card">
+                        <h3>🏆 Leaderboard</h3>
+                        <p>Track overall rankings</p>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <i class="fas fa-search"></i>
-                    <h3>Easy Search</h3>
-                    <p>Find results by name, event, or college</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-chart-bar"></i>
-                    <h3>Leaderboards</h3>
-                    <p>Track overall points and rankings</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fas fa-share-alt"></i>
-                    <h3>Share Results</h3>
-                    <p>Share achievements on social media</p>
-                </div>
-            </section>
-
-            <footer class="footer">
-                <p>&copy; 2024 Festival Results Portal. All rights reserved.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                </div>
-            </footer>
+            </div>
         </div>
 
         <!-- Results Page -->
-        <div id="resultsPage" class="page">
-            <div class="d-flex justify-between align-center mb-4">
-                <h2><i class="fas fa-trophy"></i> Published Results</h2>
-                <div class="d-flex gap-2">
-                    <button id="tableViewBtn" class="btn btn-secondary active">
-                        <i class="fas fa-table"></i> Table
-                    </button>
-                    <button id="cardViewBtn" class="btn btn-secondary">
-                        <i class="fas fa-th-large"></i> Cards
-                    </button>
+        <div id="resultsPage" class="page hidden">
+            <div class="card">
+                <h2>📋 Published Results</h2>
+                
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by name, college, or event...">
+                    <button id="searchBtn" class="btn btn-primary">Search</button>
                 </div>
-            </div>
-
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search by participant name, college, or event..." class="form-control">
-                <button id="searchBtn" class="btn btn-primary">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-
-            <div class="filters">
-                <select id="filterCategory" class="form-control">
-                    <option value="">All Categories</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Cultural">Cultural</option>
-                    <option value="Academic">Academic</option>
-                    <option value="Arts">Arts</option>
-                </select>
-                <select id="filterEvent" class="form-control">
-                    <option value="">All Events</option>
-                </select>
-                <select id="sortResults" class="form-control">
-                    <option value="position">Sort by Position</option>
-                    <option value="points">Sort by Points</option>
-                    <option value="name">Sort by Name</option>
-                    <option value="date">Sort by Date</option>
-                </select>
-            </div>
-
-            <!-- Table View -->
-            <div id="tableView" class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th>Participant</th>
-                            <th>Event</th>
-                            <th>Category</th>
-                            <th>College</th>
-                            <th>Points</th>
-                            <th>Achievement</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultsTableBody">
-                        <!-- Results will be loaded here -->
-                    </tbody>
-                </table>
-                <div id="noResultsTable" class="hidden text-center mt-3">
-                    <i class="fas fa-search fa-3x mb-2" style="color: var(--gray);"></i>
-                    <h3>No results found</h3>
-                    <p>Try adjusting your search criteria</p>
+                
+                <div class="filters">
+                    <select id="filterCategory">
+                        <option value="">All Categories</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Arts">Arts</option>
+                    </select>
+                    <select id="sortResults">
+                        <option value="position">Sort by Position</option>
+                        <option value="points">Sort by Points</option>
+                        <option value="name">Sort by Name</option>
+                    </select>
                 </div>
-            </div>
-
-            <!-- Cards View -->
-            <div id="cardView" class="hidden">
-                <div class="cards-grid" id="resultsGrid">
-                    <!-- Cards will be loaded here -->
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Participant</th>
+                                <th>Event</th>
+                                <th>Category</th>
+                                <th>College</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Results will load here -->
+                        </tbody>
+                    </table>
+                    <div id="noResults" class="hidden" style="text-align: center; padding: 20px;">
+                        <p>No results found</p>
+                    </div>
                 </div>
-                <div id="noResultsCards" class="hidden text-center mt-3">
-                    <i class="fas fa-search fa-3x mb-2" style="color: var(--gray);"></i>
-                    <h3>No results found</h3>
-                    <p>Try adjusting your search criteria</p>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <h3><i class="fas fa-crown"></i> Overall Leaderboard</h3>
-                <div class="table-container mt-2">
+                
+                <h3 class="mt-20">🏆 Leaderboard</h3>
+                <div class="table-container">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Rank</th>
                                 <th>Participant</th>
                                 <th>College</th>
-                                <th>Events</th>
                                 <th>Gold</th>
                                 <th>Silver</th>
                                 <th>Bronze</th>
@@ -852,7 +417,7 @@
                             </tr>
                         </thead>
                         <tbody id="leaderboardBody">
-                            <!-- Leaderboard will be loaded here -->
+                            <!-- Leaderboard will load here -->
                         </tbody>
                     </table>
                 </div>
@@ -860,59 +425,39 @@
         </div>
 
         <!-- Admin Page -->
-        <div id="adminPage" class="page">
+        <div id="adminPage" class="page hidden">
             <!-- Login Form -->
             <div id="loginForm" class="form-container">
-                <h2 class="text-center mb-3"><i class="fas fa-lock"></i> Admin Login</h2>
-                <form id="adminLogin">
-                    <div class="form-group">
-                        <label for="adminEmail">Email Address</label>
-                        <input type="email" id="adminEmail" class="form-control" placeholder="admin@festival.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="adminPassword">Password</label>
-                        <input type="password" id="adminPassword" class="form-control" placeholder="••••••••" required>
-                    </div>
-                    <div id="loginError" class="alert alert-danger hidden"></div>
-                    <button type="submit" class="btn btn-primary btn-block">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </button>
-                </form>
+                <h2 style="text-align: center; margin-bottom: 20px;">🔐 Admin Login</h2>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="adminEmail" class="form-control" placeholder="admin@festival.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="admin123">
+                </div>
+                <div id="loginError" class="alert alert-error hidden"></div>
+                <button id="loginBtn" class="btn btn-primary" style="width: 100%;">Login</button>
             </div>
-
+            
             <!-- Admin Dashboard -->
             <div id="adminDashboard" class="hidden">
-                <div class="d-flex justify-between align-center mb-4">
-                    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
-                    <button id="addResultBtn" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Result
-                    </button>
-                </div>
-
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button class="tab-btn active" data-tab="results">
-                        <i class="fas fa-list-ol"></i> Manage Results
-                    </button>
-                    <button class="tab-btn" data-tab="analytics">
-                        <i class="fas fa-chart-pie"></i> Analytics
-                    </button>
-                    <button class="tab-btn" data-tab="settings">
-                        <i class="fas fa-cog"></i> Settings
-                    </button>
-                </div>
-
-                <!-- Results Tab -->
-                <div id="resultsTab" class="tab-content active">
-                    <div class="filters mb-3">
-                        <input type="text" id="adminSearch" class="form-control" placeholder="Search results...">
-                        <select id="adminFilterStatus" class="form-control">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>⚙️ Admin Dashboard</h2>
+                        <button id="addResultBtn" class="btn btn-primary">➕ Add Result</button>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="adminSearch" placeholder="Search results...">
+                        <select id="filterStatus">
                             <option value="">All Status</option>
-                            <option value="published">Published Only</option>
-                            <option value="draft">Draft Only</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
                         </select>
                     </div>
-
+                    
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
@@ -927,215 +472,140 @@
                                 </tr>
                             </thead>
                             <tbody id="adminResultsTable">
-                                <!-- Admin results will be loaded here -->
+                                <!-- Admin results will load here -->
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <!-- Analytics Tab -->
-                <div id="analyticsTab" class="tab-content">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-users"></i>
-                            <h3 id="totalParticipants">0</h3>
-                            <p>Total Participants</p>
+                    
+                    <!-- Stats -->
+                    <div class="row mt-20">
+                        <div class="col">
+                            <div class="card">
+                                <h3>👥 Participants</h3>
+                                <p id="totalParticipants" style="font-size: 24px; font-weight: bold;">0</p>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="fas fa-trophy"></i>
-                            <h3 id="totalEvents">0</h3>
-                            <p>Total Events</p>
+                        <div class="col">
+                            <div class="card">
+                                <h3>🎯 Events</h3>
+                                <p id="totalEvents" style="font-size: 24px; font-weight: bold;">0</p>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="fas fa-star"></i>
-                            <h3 id="totalPoints">0</h3>
-                            <p>Total Points Awarded</p>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-check-circle"></i>
-                            <h3 id="publishedResults">0</h3>
-                            <p>Published Results</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Tab -->
-                <div id="settingsTab" class="tab-content">
-                    <div class="form-container">
-                        <h3 class="mb-3">Admin Settings</h3>
-                        <div class="form-group">
-                            <label>Export Data</label>
-                            <button id="exportBtn" class="btn btn-secondary w-100">
-                                <i class="fas fa-download"></i> Export All Results
-                            </button>
-                        </div>
-                        <div class="form-group">
-                            <label>Reset Demo Data</label>
-                            <button id="resetBtn" class="btn btn-warning w-100">
-                                <i class="fas fa-redo"></i> Reset Demo Data
-                            </button>
+                        <div class="col">
+                            <div class="card">
+                                <h3>⭐ Points</h3>
+                                <p id="totalPoints" style="font-size: 24px; font-weight: bold;">0</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 Festival Results Management System</p>
+        </footer>
     </div>
 
     <!-- Add/Edit Result Modal -->
     <div id="resultModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> <span id="modalTitle">Add Result</span></h3>
-                <button class="modal-close">&times;</button>
-            </div>
+            <h3 style="margin-bottom: 20px;">📝 <span id="modalTitle">Add Result</span></h3>
             <form id="resultForm">
                 <input type="hidden" id="resultId">
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="eventName">Event Name *</label>
-                        <input type="text" id="eventName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventCategory">Category *</label>
-                        <select id="eventCategory" class="form-control" required>
-                            <option value="">Select Category</option>
-                            <option value="Sports">Sports</option>
-                            <option value="Cultural">Cultural</option>
-                            <option value="Academic">Academic</option>
-                            <option value="Arts">Arts</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="participantName">Participant Name *</label>
-                        <input type="text" id="participantName" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="participantEmail">Email *</label>
-                        <input type="email" id="participantEmail" class="form-control" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="college">College/Team *</label>
-                        <input type="text" id="college" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="department">Department</label>
-                        <input type="text" id="department" class="form-control">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="position">Position *</label>
-                        <select id="position" class="form-control" required>
-                            <option value="1">1st (Gold)</option>
-                            <option value="2">2nd (Silver)</option>
-                            <option value="3">3rd (Bronze)</option>
-                            <option value="4">4th</option>
-                            <option value="5">5th</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="points">Points Awarded *</label>
-                        <input type="number" id="points" class="form-control" min="0" value="10" required>
-                    </div>
-                </div>
-
                 <div class="form-group">
-                    <label for="remarks">Remarks</label>
-                    <textarea id="remarks" class="form-control" rows="3"></textarea>
+                    <label>Event Name *</label>
+                    <input type="text" id="eventName" class="form-control" required>
                 </div>
-
+                
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="isPublished"> Publish immediately
-                    </label>
+                    <label>Category *</label>
+                    <select id="eventCategory" class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Cultural">Cultural</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Arts">Arts</option>
+                    </select>
                 </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-1">
-                        <i class="fas fa-save"></i> Save Result
-                    </button>
-                    <button type="button" class="btn btn-secondary modal-close">
-                        Cancel
-                    </button>
+                
+                <div class="form-group">
+                    <label>Participant Name *</label>
+                    <input type="text" id="participantName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Participant Email</label>
+                    <input type="email" id="participantEmail" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label>College/Team *</label>
+                    <input type="text" id="college" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Position *</label>
+                    <select id="position" class="form-control" required>
+                        <option value="1">1st (Gold)</option>
+                        <option value="2">2nd (Silver)</option>
+                        <option value="3">3rd (Bronze)</option>
+                        <option value="4">4th</option>
+                        <option value="5">5th</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Points *</label>
+                    <input type="number" id="points" class="form-control" value="10" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Publish Immediately</label>
+                    <input type="checkbox" id="isPublished">
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
+                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="modal">
-        <div class="modal-content" style="background: transparent; box-shadow: none;">
-            <div class="spinner"></div>
-            <p class="text-center mt-2" style="color: white;">Loading...</p>
-        </div>
-    </div>
-
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, remove, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDZpjUIKYoE2Y1NXWpEZwJyTGAFU8-eTjI",
-            authDomain: "ne-d23c5.firebaseapp.com",
-            databaseURL: "https://ne-d23c5-default-rtdb.firebaseio.com",
-            projectId: "ne-d23c5",
-            storageBucket: "ne-d23c5.firebasestorage.app",
-            messagingSenderId: "387535908944",
-            appId: "1:387535908944:web:f6710271861e47464a2155",
-            measurementId: "G-MH25GMCYG2"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        // Export to global scope
-        window.firebase = { database, ref, set, get, update, remove, push, onValue };
-    </script>
-
     <script>
-        // ===== GLOBAL STATE =====
+        // ===== APP STATE =====
         let currentUser = null;
         let allResults = [];
-        let allEvents = new Set();
-
+        
         // ===== DOM ELEMENTS =====
         const pages = {
             home: document.getElementById('homePage'),
             results: document.getElementById('resultsPage'),
             admin: document.getElementById('adminPage')
         };
-
+        
         const modals = {
-            result: document.getElementById('resultModal'),
-            loading: document.getElementById('loadingOverlay')
+            result: document.getElementById('resultModal')
         };
-
-        // ===== PAGE NAVIGATION =====
+        
+        // ===== NAVIGATION =====
         document.querySelectorAll('[data-page]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const page = e.target.closest('[data-page]').dataset.page;
-                navigateTo(page);
+                showPage(page);
             });
         });
-
-        function navigateTo(page) {
-            // Update active page
-            Object.values(pages).forEach(p => p.classList.remove('active'));
-            pages[page].classList.add('active');
+        
+        function showPage(page) {
+            // Hide all pages
+            Object.values(pages).forEach(p => p.classList.add('hidden'));
+            
+            // Show selected page
+            pages[page].classList.remove('hidden');
             
             // Update active nav link
             document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
@@ -1149,236 +619,206 @@
                 logoutBtn.classList.add('hidden');
             }
             
-            // Load data for the page
+            // Load page data
             if (page === 'results') {
                 loadPublicResults();
-                loadLeaderboard();
             } else if (page === 'admin' && currentUser) {
                 loadAdminResults();
-                loadAnalytics();
+                loadStats();
             }
         }
-
+        
         // ===== MODAL FUNCTIONS =====
         function showModal(modal) {
             modal.classList.add('active');
         }
-
+        
         function hideModal(modal) {
             modal.classList.remove('active');
         }
-
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', () => {
-                hideModal(modals.result);
-            });
+        
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            hideModal(modals.result);
         });
-
+        
         // Click outside modal to close
         modals.result.addEventListener('click', (e) => {
             if (e.target === modals.result) {
                 hideModal(modals.result);
             }
         });
-
-        // ===== LOADING FUNCTIONS =====
-        function showLoading() {
-            showModal(modals.loading);
-        }
-
-        function hideLoading() {
-            hideModal(modals.loading);
-        }
-
-        // ===== FIREBASE FUNCTIONS =====
+        
+        // ===== LOCAL STORAGE FUNCTIONS =====
+        // Since we're not using Firebase in this simple version, we'll use localStorage
+        
         function saveResult(resultData, id = null) {
-            return new Promise(async (resolve, reject) => {
-                try {
+            return new Promise((resolve) => {
+                setTimeout(() => {
                     if (id) {
-                        // Update existing result
-                        await update(window.firebase.ref(window.firebase.database, `results/${id}`), {
-                            ...resultData,
-                            updatedAt: Date.now()
-                        });
+                        // Update existing
+                        const index = allResults.findIndex(r => r.id === id);
+                        if (index !== -1) {
+                            allResults[index] = { ...allResults[index], ...resultData };
+                        }
                     } else {
-                        // Create new result
-                        const newResultRef = window.firebase.push(window.firebase.ref(window.firebase.database, 'results'));
-                        await window.firebase.set(newResultRef, {
+                        // Create new
+                        const newId = 'result_' + Date.now();
+                        const newResult = {
+                            id: newId,
                             ...resultData,
-                            createdAt: Date.now(),
-                            updatedAt: Date.now()
-                        });
-                        id = newResultRef.key;
+                            createdAt: Date.now()
+                        };
+                        allResults.push(newResult);
+                        id = newId;
                     }
-                    resolve(id);
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-
-        function deleteResult(id) {
-            return window.firebase.remove(window.firebase.ref(window.firebase.database, `results/${id}`));
-        }
-
-        function loadAllResults(callback) {
-            const resultsRef = window.firebase.ref(window.firebase.database, 'results');
-            window.firebase.onValue(resultsRef, (snapshot) => {
-                allResults = [];
-                allEvents.clear();
-                
-                snapshot.forEach((childSnapshot) => {
-                    const result = {
-                        id: childSnapshot.key,
-                        ...childSnapshot.val()
-                    };
-                    allResults.push(result);
                     
-                    if (result.eventName) {
-                        allEvents.add(result.eventName);
+                    // Save to localStorage
+                    localStorage.setItem('festivalResults', JSON.stringify(allResults));
+                    resolve(id);
+                }, 300);
+            });
+        }
+        
+        function deleteResult(id) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    allResults = allResults.filter(r => r.id !== id);
+                    localStorage.setItem('festivalResults', JSON.stringify(allResults));
+                    resolve();
+                }, 300);
+            });
+        }
+        
+        function loadResultsFromStorage() {
+            const saved = localStorage.getItem('festivalResults');
+            if (saved) {
+                allResults = JSON.parse(saved);
+            } else {
+                // Create demo data
+                allResults = [
+                    {
+                        id: '1',
+                        eventName: '100m Sprint',
+                        eventCategory: 'Sports',
+                        participantName: 'John Smith',
+                        participantEmail: 'john@example.com',
+                        college: 'ABC University',
+                        position: 1,
+                        points: 10,
+                        isPublished: true,
+                        createdAt: Date.now() - 86400000
+                    },
+                    {
+                        id: '2',
+                        eventName: '100m Sprint',
+                        eventCategory: 'Sports',
+                        participantName: 'Emma Wilson',
+                        participantEmail: 'emma@example.com',
+                        college: 'XYZ College',
+                        position: 2,
+                        points: 8,
+                        isPublished: true,
+                        createdAt: Date.now() - 86400000
+                    },
+                    {
+                        id: '3',
+                        eventName: 'Dance Competition',
+                        eventCategory: 'Cultural',
+                        participantName: 'Sarah Johnson',
+                        participantEmail: 'sarah@example.com',
+                        college: 'ABC University',
+                        position: 1,
+                        points: 10,
+                        isPublished: true,
+                        createdAt: Date.now() - 43200000
+                    },
+                    {
+                        id: '4',
+                        eventName: 'Debate Competition',
+                        eventCategory: 'Academic',
+                        participantName: 'Michael Brown',
+                        participantEmail: 'michael@example.com',
+                        college: 'LMN Institute',
+                        position: 1,
+                        points: 10,
+                        isPublished: false,
+                        createdAt: Date.now() - 21600000
                     }
-                });
-                
-                if (callback) callback();
-            });
+                ];
+                localStorage.setItem('festivalResults', JSON.stringify(allResults));
+            }
         }
-
-        // ===== PUBLIC RESULTS PAGE =====
+        
+        // ===== PUBLIC RESULTS =====
         function loadPublicResults() {
-            showLoading();
+            const tbody = document.getElementById('resultsTableBody');
+            const noResults = document.getElementById('noResults');
             
-            // Populate events filter
-            const eventFilter = document.getElementById('filterEvent');
-            eventFilter.innerHTML = '<option value="">All Events</option>';
-            allEvents.forEach(event => {
-                const option = document.createElement('option');
-                option.value = event;
-                option.textContent = event;
-                eventFilter.appendChild(option);
-            });
-            
-            filterAndDisplayPublicResults();
-            hideLoading();
-        }
-
-        function filterAndDisplayPublicResults() {
+            // Get filters
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const category = document.getElementById('filterCategory').value;
-            const event = document.getElementById('filterEvent').value;
             const sortBy = document.getElementById('sortResults').value;
             
             // Filter results
-            let filtered = allResults.filter(result => 
-                result.isPublished === true
-            );
+            let filtered = allResults.filter(r => r.isPublished === true);
             
-            // Apply filters
             if (searchTerm) {
-                filtered = filtered.filter(result => 
-                    result.participantName?.toLowerCase().includes(searchTerm) ||
-                    result.college?.toLowerCase().includes(searchTerm) ||
-                    result.eventName?.toLowerCase().includes(searchTerm) ||
-                    result.department?.toLowerCase().includes(searchTerm)
+                filtered = filtered.filter(r => 
+                    r.participantName.toLowerCase().includes(searchTerm) ||
+                    r.college.toLowerCase().includes(searchTerm) ||
+                    r.eventName.toLowerCase().includes(searchTerm)
                 );
             }
             
             if (category) {
-                filtered = filtered.filter(result => result.eventCategory === category);
-            }
-            
-            if (event) {
-                filtered = filtered.filter(result => result.eventName === event);
+                filtered = filtered.filter(r => r.eventCategory === category);
             }
             
             // Sort results
-            filtered.sort((a, b) => {
-                if (sortBy === 'position') return a.position - b.position;
-                if (sortBy === 'points') return b.points - a.points;
-                if (sortBy === 'name') return a.participantName.localeCompare(b.participantName);
-                if (sortBy === 'date') return (b.createdAt || 0) - (a.createdAt || 0);
-                return 0;
-            });
+            if (sortBy === 'position') {
+                filtered.sort((a, b) => a.position - b.position);
+            } else if (sortBy === 'points') {
+                filtered.sort((a, b) => b.points - a.points);
+            } else if (sortBy === 'name') {
+                filtered.sort((a, b) => a.participantName.localeCompare(b.participantName));
+            }
             
-            displayPublicResults(filtered);
-        }
-
-        function displayPublicResults(results) {
-            const tableBody = document.getElementById('resultsTableBody');
-            const cardsGrid = document.getElementById('resultsGrid');
-            const noResultsTable = document.getElementById('noResultsTable');
-            const noResultsCards = document.getElementById('noResultsCards');
+            // Display results
+            tbody.innerHTML = '';
             
-            // Clear previous results
-            tableBody.innerHTML = '';
-            cardsGrid.innerHTML = '';
-            
-            if (results.length === 0) {
-                noResultsTable.classList.remove('hidden');
-                noResultsCards.classList.remove('hidden');
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
                 return;
             }
             
-            noResultsTable.classList.add('hidden');
-            noResultsCards.classList.add('hidden');
+            noResults.classList.add('hidden');
             
-            // Display in table view
-            results.forEach(result => {
+            filtered.forEach(result => {
+                const medal = result.position === 1 ? '🥇' : 
+                             result.position === 2 ? '🥈' : 
+                             result.position === 3 ? '🥉' : result.position;
+                
                 const row = document.createElement('tr');
-                
-                const positionClass = result.position <= 3 ? `position-${result.position}` : 'position-other';
-                const medalIcon = result.position === 1 ? '🥇' : 
-                                 result.position === 2 ? '🥈' : 
-                                 result.position === 3 ? '🥉' : `${result.position}th`;
-                
                 row.innerHTML = `
+                    <td><strong>${medal}</strong></td>
                     <td>
-                        <div class="position-badge ${positionClass}">${medalIcon}</div>
+                        <strong>${result.participantName}</strong><br>
+                        <small>${result.participantEmail || ''}</small>
                     </td>
-                    <td>
-                        <strong>${result.participantName}</strong>
-                        ${result.participantEmail ? `<br><small>${result.participantEmail}</small>` : ''}
-                    </td>
-                    <td>${result.eventName || 'N/A'}</td>
-                    <td><span class="badge">${result.eventCategory || ''}</span></td>
-                    <td>${result.college || 'N/A'}</td>
-                    <td><strong>${result.points || 0}</strong></td>
-                    <td>
-                        ${result.position === 1 ? '🏆 Gold Medal' : 
-                          result.position === 2 ? '🥈 Silver Medal' : 
-                          result.position === 3 ? '🥉 Bronze Medal' : 
-                          'Certificate'}
-                    </td>
+                    <td>${result.eventName}</td>
+                    <td>${result.eventCategory}</td>
+                    <td>${result.college}</td>
+                    <td><strong>${result.points}</strong></td>
                 `;
-                tableBody.appendChild(row);
-                
-                // Display in cards view
-                const card = document.createElement('div');
-                card.className = 'result-card';
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h4>${result.participantName}</h4>
-                            <p>${result.college || ''}</p>
-                        </div>
-                        <div class="position-badge ${positionClass}">${medalIcon}</div>
-                    </div>
-                    <div class="mb-2">
-                        <strong>${result.eventName || 'N/A'}</strong>
-                        <div class="badge">${result.eventCategory || ''}</div>
-                    </div>
-                    <div class="d-flex justify-between">
-                        <span>Points: <strong>${result.points || 0}</strong></span>
-                        <span>${result.position === 1 ? '🏆 Gold' : 
-                               result.position === 2 ? '🥈 Silver' : 
-                               result.position === 3 ? '🥉 Bronze' : 'Participant'}</span>
-                    </div>
-                `;
-                cardsGrid.appendChild(card);
+                tbody.appendChild(row);
             });
+            
+            // Load leaderboard
+            loadLeaderboard();
         }
-
-        // ===== LEADERBOARD =====
+        
         function loadLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
             const publishedResults = allResults.filter(r => r.isPublished);
             const leaderboard = {};
             
@@ -1387,9 +827,7 @@
                 if (!leaderboard[key]) {
                     leaderboard[key] = {
                         name: result.participantName,
-                        email: result.participantEmail,
                         college: result.college,
-                        events: 0,
                         gold: 0,
                         silver: 0,
                         bronze: 0,
@@ -1397,92 +835,78 @@
                     };
                 }
                 
-                const participant = leaderboard[key];
-                participant.events++;
-                participant.totalPoints += result.points || 0;
-                
-                if (result.position === 1) participant.gold++;
-                if (result.position === 2) participant.silver++;
-                if (result.position === 3) participant.bronze++;
+                const p = leaderboard[key];
+                p.totalPoints += result.points || 0;
+                if (result.position === 1) p.gold++;
+                if (result.position === 2) p.silver++;
+                if (result.position === 3) p.bronze++;
             });
             
             // Convert to array and sort
             const leaderboardArray = Object.values(leaderboard)
                 .sort((a, b) => b.totalPoints - a.totalPoints);
             
-            displayLeaderboard(leaderboardArray);
-        }
-
-        function displayLeaderboard(leaderboard) {
-            const tbody = document.getElementById('leaderboardBody');
+            // Display
             tbody.innerHTML = '';
-            
-            leaderboard.forEach((participant, index) => {
+            leaderboardArray.forEach((p, index) => {
                 const row = document.createElement('tr');
+                const rank = index === 0 ? '🥇' : 
+                           index === 1 ? '🥈' : 
+                           index === 2 ? '🥉' : index + 1;
+                
                 row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>
-                        <strong>${participant.name}</strong>
-                        ${participant.email ? `<br><small>${participant.email}</small>` : ''}
-                    </td>
-                    <td>${participant.college || 'N/A'}</td>
-                    <td>${participant.events}</td>
-                    <td>${participant.gold}</td>
-                    <td>${participant.silver}</td>
-                    <td>${participant.bronze}</td>
-                    <td><strong>${participant.totalPoints}</strong></td>
+                    <td><strong>${rank}</strong></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.college}</td>
+                    <td>${p.gold}</td>
+                    <td>${p.silver}</td>
+                    <td>${p.bronze}</td>
+                    <td><strong>${p.totalPoints}</strong></td>
                 `;
                 tbody.appendChild(row);
             });
         }
-
+        
         // ===== ADMIN FUNCTIONS =====
-        // Admin Login
-        document.getElementById('adminLogin').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
+        // Login
+        document.getElementById('loginBtn').addEventListener('click', () => {
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
             const errorDiv = document.getElementById('loginError');
             
-            // Demo admin credentials
             if (email === 'admin@festival.com' && password === 'admin123') {
                 currentUser = { email, role: 'admin' };
                 localStorage.setItem('festivalAdmin', 'true');
                 
-                // Show admin dashboard
+                // Show dashboard
                 document.getElementById('loginForm').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 document.getElementById('logoutBtn').classList.remove('hidden');
                 
                 // Load admin data
                 loadAdminResults();
-                loadAnalytics();
+                loadStats();
                 
                 showNotification('Login successful!', 'success');
             } else {
-                errorDiv.textContent = 'Invalid credentials. Use admin@festival.com / admin123';
+                errorDiv.textContent = 'Invalid credentials. Use: admin@festival.com / admin123';
                 errorDiv.classList.remove('hidden');
             }
         });
-
+        
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', () => {
             currentUser = null;
             localStorage.removeItem('festivalAdmin');
             
-            // Show login form
             document.getElementById('loginForm').classList.remove('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
             document.getElementById('logoutBtn').classList.add('hidden');
             
-            // Clear form
-            document.getElementById('adminLogin').reset();
-            document.getElementById('loginError').classList.add('hidden');
-            
             showNotification('Logged out successfully', 'info');
+            showPage('home');
         });
-
+        
         // Check if already logged in
         if (localStorage.getItem('festivalAdmin') === 'true') {
             currentUser = { email: 'admin@festival.com', role: 'admin' };
@@ -1490,98 +914,82 @@
             document.getElementById('adminDashboard').classList.remove('hidden');
             document.getElementById('logoutBtn').classList.remove('hidden');
         }
-
+        
         // Load Admin Results
         function loadAdminResults() {
             const tbody = document.getElementById('adminResultsTable');
-            const searchInput = document.getElementById('adminSearch');
-            const statusFilter = document.getElementById('adminFilterStatus');
+            const searchTerm = document.getElementById('adminSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
             
-            // Filter results
             let filtered = [...allResults];
             
-            if (searchInput.value) {
-                const searchTerm = searchInput.value.toLowerCase();
-                filtered = filtered.filter(result => 
-                    result.participantName?.toLowerCase().includes(searchTerm) ||
-                    result.eventName?.toLowerCase().includes(searchTerm) ||
-                    result.college?.toLowerCase().includes(searchTerm)
+            if (searchTerm) {
+                filtered = filtered.filter(r => 
+                    r.participantName.toLowerCase().includes(searchTerm) ||
+                    r.eventName.toLowerCase().includes(searchTerm) ||
+                    r.college.toLowerCase().includes(searchTerm)
                 );
             }
             
-            if (statusFilter.value === 'published') {
-                filtered = filtered.filter(result => result.isPublished === true);
-            } else if (statusFilter.value === 'draft') {
-                filtered = filtered.filter(result => !result.isPublished);
+            if (statusFilter === 'published') {
+                filtered = filtered.filter(r => r.isPublished === true);
+            } else if (statusFilter === 'draft') {
+                filtered = filtered.filter(r => !r.isPublished);
             }
             
-            // Sort by creation date (newest first)
-            filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            // Sort by date (newest first)
+            filtered.sort((a, b) => b.createdAt - a.createdAt);
             
-            displayAdminResults(filtered);
-        }
-
-        function displayAdminResults(results) {
-            const tbody = document.getElementById('adminResultsTable');
+            // Display
             tbody.innerHTML = '';
             
-            if (results.length === 0) {
+            if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center">
-                            <i class="fas fa-search mb-2" style="font-size: 2rem; color: var(--gray);"></i>
-                            <p>No results found</p>
+                        <td colspan="7" style="text-align: center; padding: 20px;">
+                            No results found
                         </td>
                     </tr>
                 `;
                 return;
             }
             
-            results.forEach(result => {
-                const row = document.createElement('tr');
-                
+            filtered.forEach(result => {
                 const status = result.isPublished ? 
                     '<span class="badge badge-success">Published</span>' : 
                     '<span class="badge badge-warning">Draft</span>';
                 
+                const medal = result.position === 1 ? '🥇' : 
+                             result.position === 2 ? '🥈' : 
+                             result.position === 3 ? '🥉' : result.position;
+                
+                const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
-                        <strong>${result.eventName || 'N/A'}</strong>
-                        <br><small>${result.eventCategory || ''}</small>
+                        <strong>${result.eventName}</strong><br>
+                        <small>${result.eventCategory}</small>
                     </td>
                     <td>
-                        <strong>${result.participantName}</strong>
-                        <br><small>${result.participantEmail || ''}</small>
+                        <strong>${result.participantName}</strong><br>
+                        <small>${result.participantEmail || ''}</small>
                     </td>
-                    <td>${result.college || 'N/A'}</td>
-                    <td>
-                        <div class="position-badge ${result.position <= 3 ? `position-${result.position}` : 'position-other'}">
-                            ${result.position === 1 ? '🥇' : 
-                              result.position === 2 ? '🥈' : 
-                              result.position === 3 ? '🥉' : result.position}
-                        </div>
-                    </td>
-                    <td><strong>${result.points || 0}</strong></td>
+                    <td>${result.college}</td>
+                    <td>${medal}</td>
+                    <td><strong>${result.points}</strong></td>
                     <td>${status}</td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <button onclick="editResult('${result.id}')" class="btn btn-sm btn-secondary">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="togglePublish('${result.id}', ${!result.isPublished})" class="btn btn-sm ${result.isPublished ? 'btn-warning' : 'btn-success'}">
-                                <i class="fas ${result.isPublished ? 'fa-eye-slash' : 'fa-eye'}"></i>
-                            </button>
-                            <button onclick="deleteResultAction('${result.id}')" class="btn btn-sm btn-danger">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
+                        <button onclick="editResult('${result.id}')" class="btn btn-secondary" style="padding: 5px 10px; margin: 2px;">✏️</button>
+                        <button onclick="togglePublish('${result.id}', ${!result.isPublished})" class="btn ${result.isPublished ? 'btn-warning' : 'btn-success'}" style="padding: 5px 10px; margin: 2px;">
+                            ${result.isPublished ? '👁️' : '👁️'}
+                        </button>
+                        <button onclick="deleteResultAction('${result.id}')" class="btn btn-danger" style="padding: 5px 10px; margin: 2px;">🗑️</button>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
         }
-
-        // Admin Actions
+        
+        // Admin Actions (global functions)
         window.editResult = function(id) {
             const result = allResults.find(r => r.id === id);
             if (!result) return;
@@ -1593,56 +1001,57 @@
             document.getElementById('participantName').value = result.participantName || '';
             document.getElementById('participantEmail').value = result.participantEmail || '';
             document.getElementById('college').value = result.college || '';
-            document.getElementById('department').value = result.department || '';
             document.getElementById('position').value = result.position || 1;
-            document.getElementById('points').value = result.points || 0;
-            document.getElementById('remarks').value = result.remarks || '';
+            document.getElementById('points').value = result.points || 10;
             document.getElementById('isPublished').checked = result.isPublished || false;
             
             showModal(modals.result);
         };
-
-        window.togglePublish = async function(id, publish) {
-            try {
-                await update(window.firebase.ref(window.firebase.database, `results/${id}`), {
-                    isPublished: publish,
-                    publishedAt: publish ? Date.now() : null
-                });
-                
-                showNotification(
-                    publish ? 'Result published successfully!' : 'Result unpublished successfully!',
-                    'success'
-                );
-            } catch (error) {
-                console.error('Error updating publish status:', error);
-                showNotification('Error updating status', 'error');
+        
+        window.togglePublish = function(id, publish) {
+            const result = allResults.find(r => r.id === id);
+            if (!result) return;
+            
+            result.isPublished = publish;
+            result.publishedAt = publish ? Date.now() : null;
+            
+            localStorage.setItem('festivalResults', JSON.stringify(allResults));
+            loadAdminResults();
+            loadStats();
+            
+            // Also reload public results if on that page
+            if (document.getElementById('resultsPage').classList.contains('hidden') === false) {
+                loadPublicResults();
             }
+            
+            showNotification(
+                publish ? 'Result published!' : 'Result unpublished!',
+                'success'
+            );
         };
-
+        
         window.deleteResultAction = function(id) {
-            if (confirm('Are you sure you want to delete this result? This action cannot be undone.')) {
+            if (confirm('Delete this result?')) {
                 deleteResult(id)
                     .then(() => {
-                        showNotification('Result deleted successfully!', 'success');
-                    })
-                    .catch(error => {
-                        console.error('Error deleting result:', error);
-                        showNotification('Error deleting result', 'error');
+                        loadAdminResults();
+                        loadStats();
+                        showNotification('Result deleted!', 'success');
                     });
             }
         };
-
+        
         // Add Result Button
         document.getElementById('addResultBtn').addEventListener('click', () => {
-            document.getElementById('modalTitle').textContent = 'Add New Result';
+            document.getElementById('modalTitle').textContent = 'Add Result';
             document.getElementById('resultForm').reset();
             document.getElementById('resultId').value = '';
             document.getElementById('isPublished').checked = false;
             showModal(modals.result);
         });
-
+        
         // Save Result Form
-        document.getElementById('resultForm').addEventListener('submit', async (e) => {
+        document.getElementById('resultForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
             const id = document.getElementById('resultId').value;
@@ -1652,220 +1061,64 @@
                 participantName: document.getElementById('participantName').value,
                 participantEmail: document.getElementById('participantEmail').value,
                 college: document.getElementById('college').value,
-                department: document.getElementById('department').value,
                 position: parseInt(document.getElementById('position').value),
                 points: parseInt(document.getElementById('points').value),
-                remarks: document.getElementById('remarks').value,
                 isPublished: document.getElementById('isPublished').checked
             };
             
-            showLoading();
-            try {
-                await saveResult(resultData, id || null);
-                hideModal(modals.result);
-                showNotification(
-                    id ? 'Result updated successfully!' : 'Result added successfully!',
-                    'success'
-                );
-                loadAdminResults();
-                loadAnalytics();
-                
-                // Also reload public results if published
-                if (resultData.isPublished) {
-                    filterAndDisplayPublicResults();
-                    loadLeaderboard();
-                }
-            } catch (error) {
-                console.error('Error saving result:', error);
-                showNotification('Error saving result', 'error');
-            } finally {
-                hideLoading();
-            }
+            saveResult(resultData, id || null)
+                .then(() => {
+                    hideModal(modals.result);
+                    showNotification(
+                        id ? 'Result updated!' : 'Result added!',
+                        'success'
+                    );
+                    loadAdminResults();
+                    loadStats();
+                    
+                    // Reload public results if published
+                    if (resultData.isPublished && document.getElementById('resultsPage').classList.contains('hidden') === false) {
+                        loadPublicResults();
+                    }
+                });
         });
-
-        // ===== ANALYTICS =====
-        function loadAnalytics() {
+        
+        // ===== STATISTICS =====
+        function loadStats() {
             const published = allResults.filter(r => r.isPublished).length;
-            const uniqueEvents = new Set(allResults.map(r => r.eventName)).size;
             const totalPoints = allResults.reduce((sum, r) => sum + (r.points || 0), 0);
             const uniqueParticipants = new Set(allResults.map(r => r.participantEmail || r.participantName)).size;
+            const uniqueEvents = new Set(allResults.map(r => r.eventName)).size;
             
             document.getElementById('totalParticipants').textContent = uniqueParticipants;
             document.getElementById('totalEvents').textContent = uniqueEvents;
             document.getElementById('totalPoints').textContent = totalPoints;
-            document.getElementById('publishedResults').textContent = published;
         }
-
-        // ===== SEARCH & FILTER EVENT LISTENERS =====
+        
+        // ===== EVENT LISTENERS =====
         // Public results search
-        document.getElementById('searchBtn').addEventListener('click', filterAndDisplayPublicResults);
+        document.getElementById('searchBtn').addEventListener('click', loadPublicResults);
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') filterAndDisplayPublicResults();
+            if (e.key === 'Enter') loadPublicResults();
         });
-        document.getElementById('filterCategory').addEventListener('change', filterAndDisplayPublicResults);
-        document.getElementById('filterEvent').addEventListener('change', filterAndDisplayPublicResults);
-        document.getElementById('sortResults').addEventListener('change', filterAndDisplayPublicResults);
-
-        // Admin results search
+        document.getElementById('filterCategory').addEventListener('change', loadPublicResults);
+        document.getElementById('sortResults').addEventListener('change', loadPublicResults);
+        
+        // Admin search
         document.getElementById('adminSearch').addEventListener('input', loadAdminResults);
-        document.getElementById('adminFilterStatus').addEventListener('change', loadAdminResults);
-
-        // ===== VIEW TOGGLE =====
-        document.getElementById('tableViewBtn').addEventListener('click', () => {
-            document.getElementById('tableViewBtn').classList.add('active');
-            document.getElementById('cardViewBtn').classList.remove('active');
-            document.getElementById('tableView').classList.remove('hidden');
-            document.getElementById('cardView').classList.add('hidden');
-        });
-
-        document.getElementById('cardViewBtn').addEventListener('click', () => {
-            document.getElementById('cardViewBtn').classList.add('active');
-            document.getElementById('tableViewBtn').classList.remove('active');
-            document.getElementById('cardView').classList.remove('hidden');
-            document.getElementById('tableView').classList.add('hidden');
-        });
-
-        // ===== TAB FUNCTIONALITY =====
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class from all tabs
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                btn.classList.add('active');
-                document.getElementById(`${btn.dataset.tab}Tab`).classList.add('active');
-            });
-        });
-
-        // ===== EXPORT FUNCTION =====
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            const dataStr = JSON.stringify(allResults, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = 'festival-results-export.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showNotification('Data exported successfully!', 'success');
-        });
-
-        // ===== RESET DEMO DATA =====
-        document.getElementById('resetBtn').addEventListener('click', async () => {
-            if (confirm('This will reset all data to demo data. Are you sure?')) {
-                showLoading();
-                try {
-                    // Clear all existing data
-                    await remove(window.firebase.ref(window.firebase.database, 'results'));
-                    
-                    // Add demo data
-                    const demoResults = [
-                        {
-                            eventName: "100m Sprint",
-                            eventCategory: "Sports",
-                            participantName: "John Smith",
-                            participantEmail: "john@example.com",
-                            college: "ABC University",
-                            department: "Engineering",
-                            position: 1,
-                            points: 10,
-                            remarks: "Excellent performance",
-                            isPublished: true,
-                            createdAt: Date.now() - 86400000
-                        },
-                        {
-                            eventName: "100m Sprint",
-                            eventCategory: "Sports",
-                            participantName: "Emma Wilson",
-                            participantEmail: "emma@example.com",
-                            college: "XYZ College",
-                            department: "Science",
-                            position: 2,
-                            points: 8,
-                            remarks: "Great effort",
-                            isPublished: true,
-                            createdAt: Date.now() - 86400000
-                        },
-                        {
-                            eventName: "Dance Competition",
-                            eventCategory: "Cultural",
-                            participantName: "Sarah Johnson",
-                            participantEmail: "sarah@example.com",
-                            college: "ABC University",
-                            department: "Arts",
-                            position: 1,
-                            points: 10,
-                            remarks: "Outstanding performance",
-                            isPublished: true,
-                            createdAt: Date.now() - 43200000
-                        },
-                        {
-                            eventName: "Debate Competition",
-                            eventCategory: "Academic",
-                            participantName: "Michael Brown",
-                            participantEmail: "michael@example.com",
-                            college: "LMN Institute",
-                            department: "Law",
-                            position: 1,
-                            points: 10,
-                            remarks: "Very persuasive arguments",
-                            isPublished: true,
-                            createdAt: Date.now() - 21600000
-                        },
-                        {
-                            eventName: "Painting Competition",
-                            eventCategory: "Arts",
-                            participantName: "Lisa Wong",
-                            participantEmail: "lisa@example.com",
-                            college: "XYZ College",
-                            department: "Fine Arts",
-                            position: 1,
-                            points: 10,
-                            remarks: "Creative artwork",
-                            isPublished: false,
-                            createdAt: Date.now() - 7200000
-                        }
-                    ];
-                    
-                    // Save demo data
-                    for (const result of demoResults) {
-                        const newResultRef = push(ref(window.firebase.database, 'results'));
-                        await set(newResultRef, result);
-                    }
-                    
-                    showNotification('Demo data reset successfully!', 'success');
-                    loadAdminResults();
-                    loadPublicResults();
-                    loadLeaderboard();
-                    loadAnalytics();
-                } catch (error) {
-                    console.error('Error resetting data:', error);
-                    showNotification('Error resetting data', 'error');
-                } finally {
-                    hideLoading();
-                }
-            }
-        });
-
+        document.getElementById('filterStatus').addEventListener('change', loadAdminResults);
+        
         // ===== NOTIFICATION SYSTEM =====
         function showNotification(message, type = 'info') {
             // Create notification element
             const notification = document.createElement('div');
-            notification.className = `alert alert-${type}`;
+            notification.className = `alert alert-${type === 'error' ? 'error' : 'success'}`;
             notification.style.position = 'fixed';
             notification.style.top = '20px';
             notification.style.right = '20px';
             notification.style.zIndex = '1000';
             notification.style.maxWidth = '300px';
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 
-                                  type === 'error' ? 'exclamation-circle' : 
-                                  type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            `;
+            notification.textContent = message;
             
             document.body.appendChild(notification);
             
@@ -1874,38 +1127,20 @@
                 notification.remove();
             }, 3000);
         }
-
+        
         // ===== INITIALIZE APP =====
         document.addEventListener('DOMContentLoaded', () => {
-            // Load all results
-            loadAllResults(() => {
-                // Check current page and load appropriate data
-                const currentPage = document.querySelector('.page.active').id.replace('Page', '');
-                if (currentPage === 'results') {
-                    loadPublicResults();
-                    loadLeaderboard();
-                } else if (currentPage === 'admin' && currentUser) {
-                    loadAdminResults();
-                    loadAnalytics();
-                }
-            });
+            // Load data from localStorage
+            loadResultsFromStorage();
             
-            // Show welcome message
-            setTimeout(() => {
-                if (!localStorage.getItem('festivalWelcomeShown')) {
-                    showNotification('Welcome to Festival Results System! Use admin@festival.com / admin123 for admin access', 'info');
-                    localStorage.setItem('festivalWelcomeShown', 'true');
-                }
-            }, 1000);
+            // Show welcome message on first visit
+            if (!localStorage.getItem('festivalFirstVisit')) {
+                setTimeout(() => {
+                    showNotification('Welcome! Use admin@festival.com / admin123 to login', 'info');
+                    localStorage.setItem('festivalFirstVisit', 'true');
+                }, 1000);
+            }
         });
-
-        // ===== GLOBAL EXPORTS =====
-        window.FestivalApp = {
-            navigateTo,
-            showNotification,
-            loadPublicResults,
-            loadAdminResults
-        };
     </script>
 </body>
 </html>
