@@ -1,1263 +1,1911 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>KGN DA'WA College Mithur - Library Management System</title>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-<style>
-  /* Reset and base styles */
-  *, *::before, *::after { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 0;
-    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #fff;
-    color: #6b7280;
-    font-size: 16px;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  h1, h2 {
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 1rem 0;
-    user-select: none;
-  }
-  h1 {
-    font-size: 3rem;
-    font-weight: 800;
-  }
-  h2 {
-    font-size: 2rem;
-  }
-  p, label {
-    font-size: 1rem;
-    margin: 0 0 1rem 0;
-    user-select: none;
-  }
-  a { color: #4a90e2; text-decoration: none; transition: color 0.25s ease; }
-  a:hover, a:focus { color: #357ab8; outline: none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festival Results Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  /* Container and layout */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 4rem 2rem 6rem;
-  }
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
 
-  /* Navigation */
-  nav.nav {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    padding: 1rem 2rem;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 1000;
-  }
-  nav.nav .logo {
-    font-weight: 800;
-    font-size: 1.75rem;
-    color: #4a90e2;
-    user-select: none;
-  }
-  nav.nav .nav-items {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-  nav.nav .nav-items button {
-    background: transparent;
-    border: none;
-    font-weight: 600;
-    font-size: 1rem;
-    color: #6b7280;
-    cursor: pointer;
-    padding: 0.4rem 0.9rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    user-select: none;
-  }
-  nav.nav .nav-items button:hover,
-  nav.nav .nav-items button.active {
-    background-color: #4a90e2;
-    color: #fff;
-  }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
 
-  /* Login Section */
-  #login-view {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 1rem;
-  }
-  #login-box {
-    background: white;
-    max-width: 400px;
-    width: 100%;
-    padding: 3rem 3rem 2rem 3rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    text-align: center;
-  }
-  #login-box h1 {
-    margin-bottom: 0.5rem;
-  }
-  #login-box h2 {
-    color: #374151;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-  }
-  #login-box label {
-    display: block;
-    text-align: left;
-    margin-bottom: 0.4rem;
-    font-weight: 600;
-    color: #374151;
-    font-size: 1rem;
-  }
-  #login-box input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-  }
-  #login-box input:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 10px rgba(74,144,226,0.4);
-    outline: none;
-  }
-  #login-box button {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: white;
-    background: linear-gradient(90deg, #4a90e2, #9013fe);
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  #login-box button:hover, #login-box button:focus {
-    background: linear-gradient(90deg, #357ab8, #6e0bd7);
-  }
-  #login-error {
-    color: #dc2626;
-    font-weight: 600;
-    margin-top: -0.8rem;
-    margin-bottom: 1rem;
-    display: none;
-  }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-  /* Book Search in login */
-  #login-book-search-container {
-    margin-top: 2rem;
-  }
-  #login-book-search-container input[type="text"] {
-    width: 100%;
-    padding: 0.7rem 1rem;
-    font-size: 1rem;
-    border-radius: 10px;
-    border: 1px solid #d1d5db;
-    transition: border-color 0.3s ease;
-  }
-  #login-book-search-container input[type="text"]:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 10px rgba(74,144,226,0.4);
-    outline: none;
-  }
+        /* ===== UTILITY CLASSES ===== */
+        .hidden {
+            display: none !important;
+        }
 
-  /* Search results dropdown */
-  #login-book-results {
-    background: white;
-    max-height: 250px;
-    overflow-y: auto;
-    margin-top: 0.5rem;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    text-align: left;
-    display: none;
-    font-size: 0.9rem;
-  }
-  #login-book-results ul {
-    list-style: none;
-    padding: 0.5rem;
-    margin: 0;
-  }
-  #login-book-results li {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 8px;
-  }
-  #login-book-results li:hover,
-  #login-book-results li:focus {
-    background-color: #e0e7ff;
-    outline: none;
-  }
+        .text-center {
+            text-align: center;
+        }
 
-  /* Main Content */
-  #main-content {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+        .text-right {
+            text-align: right;
+        }
 
-  /* Tabs container */
-  .tab-content > section {
-    display: none;
-  }
-  .tab-content > section.active {
-    display: block;
-  }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
 
-  /* Card */
-  .card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    padding: 2rem 2.5rem;
-    margin-bottom: 3rem;
-  }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
 
-  /* Forms */
-  form .form-group {
-    margin-bottom: 1.5rem;
-  }
-  form .form-group label {
-    color: #374151;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  form .form-group input,
-  form .form-group select {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    transition: border-color 0.3s ease;
-  }
-  form .form-group input:focus,
-  form .form-group select:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 12px rgba(74, 144, 226, 0.5);
-    outline: none;
-  }
-  form button.primary-btn {
-    background-color: #4a90e2;
-    color: white;
-    font-weight: 700;
-    font-size: 1.25rem;
-    padding: 1rem 1.5rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-  form button.primary-btn:hover,
-  form button.primary-btn:focus {
-    background-color: #357ab8;
-  }
+        .d-flex {
+            display: flex;
+        }
 
-  /* Tables style */
-  .scroll-table {
-    max-height: 360px;
-    overflow-y: auto;
-    border-radius: 12px;
-    box-shadow: inset 0 0 14px rgba(0,0,0,0.07);
-    margin-bottom: 2.5rem;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 1rem;
-  }
-  th, td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    color: #374151;
-    vertical-align: middle;
-    user-select: none;
-  }
-  th {
-    position: sticky;
-    top: 0;
-    background: #f3f4f6;
-    font-weight: 700;
-    z-index: 5;
-  }
-  tr:hover {
-    background-color: #e0e7ff;
-  }
-  button.edit-btn, button.delete-btn {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.95rem;
-    border-radius: 10px;
-    color: white;
-    border: none;
-    font-weight: 700;
-    user-select: none;
-    margin-left: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  button.edit-btn {
-    background-color: #4a90e2;
-  }
-  button.edit-btn:hover,
-  button.edit-btn:focus {
-    background-color: #357ab8;
-  }
-  button.delete-btn {
-    background-color: #dc2626;
-  }
-  button.delete-btn:hover,
-  button.delete-btn:focus {
-    background-color: #b91c1c;
-  }
+        .align-center {
+            align-items: center;
+        }
 
-  /* Borrow / Return Table Buttons */
-  button.borrow-btn, button.return-btn {
-    padding: 0.4rem 0.9rem;
-    font-size: 1rem;
-    border-radius: 10px;
-    color: white;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  button.borrow-btn {
-    background-color: #10b981;
-  }
-  button.borrow-btn:hover, button.borrow-btn:focus {
-    background-color: #059669;
-  }
-  button.return-btn {
-    background-color: #ef4444;
-  }
-  button.return-btn:hover, button.return-btn:focus {
-    background-color: #b91c1c;
-  }
+        .justify-between {
+            justify-content: space-between;
+        }
 
-  /* Search box */
-  .search-box {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .search-box input[type="text"] {
-    flex-grow: 1;
-    padding: 0.8rem 1rem;
-    font-size: 1rem;
-    border-radius: 12px;
-    border: 1px solid #d1d5db;
-    transition: border-color 0.25s ease;
-  }
-  .search-box input[type="text"]:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 10px rgba(74,144,226,0.4);
-    outline: none;
-  }
-  .search-box button {
-    background-color: #4a90e2;
-    color: white;
-    font-weight: 700;
-    font-size: 1.1rem;
-    padding: 0.8rem 1.5rem;
-    cursor: pointer;
-    border: none;
-    border-radius: 12px;
-    user-select: none;
-    display: none; /* Hide search buttons since search is automatic */
-  }
-  .search-box button:hover,
-  .search-box button:focus {
-    background-color: #357ab8;
-  }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
 
-  /* Bulk upload file input */
-  input[type='file'] {
-    margin-top: 0.5rem;
-    border: none;
-    outline: none;
-  }
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+        .gap-3 { gap: 1.5rem; }
 
-  /* Notification */
-  .notification {
-    background-color: #d1fae5;
-    color: #065f46;
-    border-radius: 12px;
-    font-weight: 600;
-    padding: 1rem 1.5rem;
-    margin-bottom: 1.5rem;
-    user-select: none;
-  }
+        .w-100 {
+            width: 100%;
+        }
 
-  /* Responsive */
-  @media (max-width: 900px) {
-    body {
-      font-size: 14px;
-    }
-    nav.nav {
-      padding: 1rem 1rem;
-      flex-wrap: wrap;
-    }
-    nav.nav .nav-items {
-      width: 100%;
-      justify-content: center;
-      margin-top: 0.5rem;
-      gap: 1rem;
-    }
-    #main-content {
-      padding: 2rem 1rem 3rem 1rem;
-    }
-    form button.primary-btn {
-      width: 100%;
-    }
-  }
-</style>
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+
+        .btn-lg {
+            padding: 14px 28px;
+            font-size: 1.125rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        /* ===== PAGES ===== */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== HOME PAGE ===== */
+        .hero {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ===== FORMS ===== */
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* ===== TABLES ===== */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-x: auto;
+            box-shadow: var(--shadow);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .position-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: bold;
+            color: white;
+        }
+
+        .position-1 { background: #FFD700; }
+        .position-2 { background: #C0C0C0; }
+        .position-3 { background: #CD7F32; }
+        .position-other { background: var(--primary); }
+
+        /* ===== CARDS VIEW ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border-top: 5px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .card-title h4 {
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== STATS CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-top: 5px solid var(--primary);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        /* ===== SEARCH & FILTERS ===== */
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filters select {
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 180px;
+        }
+
+        /* ===== ALERTS & MESSAGES ===== */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            margin-top: 30px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        /* ===== LOADING SPINNER ===== */
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .nav {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .nav a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <main>
-    <section id="login-view" role="main" aria-label="Library Management Login">
-      <div id="login-box">
-        <h1>KGN DA'WA College Mithur</h1>
-        <h2>Library Management Login</h2>
-        <form id="login-form" novalidate>
-          <label for="username">Username</label>
-          <input id="username" name="username" type="text" autocomplete="username" required />
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required />
-          <div id="login-error" role="alert" aria-live="assertive"></div>
-          <button type="submit">Login</button>
-        </form>
-        <div id="login-book-search-container" class="search-box" aria-label="Search books">
-          <input id="login-book-search" type="text" placeholder="Search books by name, author or number" aria-describedby="loginSearchResults" autocomplete="off" />
+    <div class="container">
+        <!-- Header -->
+        <header class="header d-flex justify-between align-center flex-wrap">
+            <div class="logo">
+                <i class="fas fa-trophy"></i>
+                <h1>Festival Results 2024</h1>
+            </div>
+            <nav class="nav">
+                <a href="#" data-page="home" class="active">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" data-page="results">
+                    <i class="fas fa-chart-line"></i> View Results
+                </a>
+                <a href="#" data-page="admin">
+                    <i class="fas fa-user-shield"></i> Admin
+                </a>
+                <button id="logoutBtn" class="btn btn-danger hidden">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </nav>
+        </header>
+
+        <!-- Home Page -->
+        <div id="homePage" class="page active">
+            <section class="hero">
+                <div class="hero-content">
+                    <h2>Celebrating Excellence & Achievement</h2>
+                    <p>Welcome to the official Festival Results Portal. View published results, track leaderboards, and celebrate achievements.</p>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" data-page="results">
+                            <i class="fas fa-chart-line"></i> View Results
+                        </button>
+                        <button class="btn btn-secondary" data-page="admin">
+                            <i class="fas fa-user-shield"></i> Admin Login
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                         alt="Festival Celebration" style="width:100%; border-radius:10px;">
+                </div>
+            </section>
+
+            <section class="features">
+                <div class="feature-card">
+                    <i class="fas fa-medal"></i>
+                    <h3>Live Results</h3>
+                    <p>Real-time updates of all competition results</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Easy Search</h3>
+                    <p>Find results by name, event, or college</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Leaderboards</h3>
+                    <p>Track overall points and rankings</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-share-alt"></i>
+                    <h3>Share Results</h3>
+                    <p>Share achievements on social media</p>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <p>&copy; 2024 Festival Results Portal. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </footer>
         </div>
-        <div id="login-book-results" role="listbox" aria-label="Book search results"></div>
-      </div>
-    </section>
 
-    <section id="dashboard" style="display:none;" aria-live="polite">
-      <nav class="nav" role="navigation" aria-label="Primary navigation">
-        <div class="logo" tabindex="0">KGN DA'WA College Library</div>
-        <div class="nav-items" role="menubar" aria-label="Main navigation">
-          <button data-tab="books" role="tab" aria-selected="false" tabindex="-1">Books</button>
-          <button data-tab="students" role="tab" aria-selected="false" tabindex="-1">Students</button>
-          <button data-tab="history" role="tab" aria-selected="false" tabindex="-1">Library History</button>
-          <button data-tab="borrowreturn" role="tab" aria-selected="false" tabindex="-1">Borrow / Return</button>
-          <button data-tab="profile" role="tab" aria-selected="false" tabindex="-1">Profile</button>
-          <button id="logout-btn" aria-label="Log out">Logout</button>
+        <!-- Results Page -->
+        <div id="resultsPage" class="page">
+            <div class="d-flex justify-between align-center mb-4">
+                <h2><i class="fas fa-trophy"></i> Published Results</h2>
+                <div class="d-flex gap-2">
+                    <button id="tableViewBtn" class="btn btn-secondary active">
+                        <i class="fas fa-table"></i> Table
+                    </button>
+                    <button id="cardViewBtn" class="btn btn-secondary">
+                        <i class="fas fa-th-large"></i> Cards
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by participant name, college, or event..." class="form-control">
+                <button id="searchBtn" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+
+            <div class="filters">
+                <select id="filterCategory" class="form-control">
+                    <option value="">All Categories</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Cultural">Cultural</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Arts">Arts</option>
+                </select>
+                <select id="filterEvent" class="form-control">
+                    <option value="">All Events</option>
+                </select>
+                <select id="sortResults" class="form-control">
+                    <option value="position">Sort by Position</option>
+                    <option value="points">Sort by Points</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="date">Sort by Date</option>
+                </select>
+            </div>
+
+            <!-- Table View -->
+            <div id="tableView" class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Participant</th>
+                            <th>Event</th>
+                            <th>Category</th>
+                            <th>College</th>
+                            <th>Points</th>
+                            <th>Achievement</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Results will be loaded here -->
+                    </tbody>
+                </table>
+                <div id="noResultsTable" class="hidden text-center mt-3">
+                    <i class="fas fa-search fa-3x mb-2" style="color: var(--gray);"></i>
+                    <h3>No results found</h3>
+                    <p>Try adjusting your search criteria</p>
+                </div>
+            </div>
+
+            <!-- Cards View -->
+            <div id="cardView" class="hidden">
+                <div class="cards-grid" id="resultsGrid">
+                    <!-- Cards will be loaded here -->
+                </div>
+                <div id="noResultsCards" class="hidden text-center mt-3">
+                    <i class="fas fa-search fa-3x mb-2" style="color: var(--gray);"></i>
+                    <h3>No results found</h3>
+                    <p>Try adjusting your search criteria</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h3><i class="fas fa-crown"></i> Overall Leaderboard</h3>
+                <div class="table-container mt-2">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Participant</th>
+                                <th>College</th>
+                                <th>Events</th>
+                                <th>Gold</th>
+                                <th>Silver</th>
+                                <th>Bronze</th>
+                                <th>Total Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Leaderboard will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </nav>
-      <main id="main-content" class="container">
-        <div class="tab-content">
-          <!-- Books tab -->
-          <section id="tab-books" role="tabpanel" tabindex="-1" aria-hidden="true" class="card">
-            <h2>Manage Books</h2>
-            <form id="add-book-form" aria-label="Add a book" autocomplete="off">
-              <div class="form-group">
-                <label for="book-name">Book Name</label>
-                <input id="book-name" type="text" required />
-              </div>
-              <div class="form-group">
-                <label for="author-name">Author Name</label>
-                <input id="author-name" type="text" required />
-              </div>
-              <div class="form-group">
-                <label for="book-num">Book Number</label>
-                <input id="book-num" type="text" required />
-              </div>
-              <button type="submit" class="primary-btn">Add Book</button>
-              <div class="form-group" style="margin-top:1.5rem;">
-                <label for="bulk-book-upload">Bulk Upload Books (CSV with columns: Name,Author,Number):</label>
-                <input type="file" id="bulk-book-upload" accept=".csv" />
-              </div>
-            </form>
-            <div class="search-box" aria-label="Search books">
-              <input id="book-search" type="text" placeholder="Search books by name, author or number" />
-            </div>
-            <div class="scroll-table" tabindex="0" aria-live="polite" aria-atomic="true">
-              <table id="books-table" role="grid" aria-label="Books list">
-                <thead>
-                  <tr><th>Name</th><th>Author</th><th>Number</th><th>Status</th><th>Actions</th></tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </section>
-          <!-- Students tab -->
-          <section id="tab-students" role="tabpanel" tabindex="-1" aria-hidden="true" class="card">
-            <h2>Manage Students</h2>
-            <form id="add-student-form" aria-label="Add a student" autocomplete="off">
-              <div class="form-group">
-                <label for="student-name">Student Name</label>
-                <input id="student-name" type="text" required />
-              </div>
-              <div class="form-group">
-                <label for="student-id">Student ID (used as password)</label>
-                <input id="student-id" type="text" required />
-              </div>
-              <button type="submit" class="primary-btn">Add Student</button>
-              <div class="form-group" style="margin-top:1.5rem;">
-                <label for="bulk-student-upload">Bulk Upload Students (CSV with columns: Name,ID):</label>
-                <input type="file" id="bulk-student-upload" accept=".csv" />
-              </div>
-            </form>
-            <div class="search-box" aria-label="Search students">
-              <input id="student-search" type="text" placeholder="Search students by name or ID" />
-            </div>
-            <div class="scroll-table" tabindex="0" aria-live="polite" aria-atomic="true">
-              <table id="students-table" role="grid" aria-label="Students list">
-                <thead>
-                  <tr><th>Name</th><th>ID</th><th>Batch</th><th>Actions</th></tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </section>
-          <!-- History tab -->
-          <section id="tab-history" role="tabpanel" tabindex="-1" aria-hidden="true" class="card">
-            <h2>Library History</h2>
-            <div class="search-box" aria-label="Filter library history">
-              <select id="history-filter" aria-label="Filter history">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly" selected>Monthly</option>
-                <option value="yearly">Yearly</option>
-                <option value="studentwise">Student-wise</option>
-                <option value="return-daywise">Return Day-wise</option>
-              </select>
-              <input id="history-student-name" type="text" placeholder="Student name (filter for student-wise)" style="display:none;" aria-label="Filter by student name" />
-            </div>
-            <div style="margin-bottom: 1rem;">
-              <button id="download-pdf" type="button" aria-label="Download history as PDF">Download PDF</button>
-              <button id="download-word" type="button" aria-label="Download history as Word">Download Word</button>
-            </div>
-            <div class="scroll-table" tabindex="0" aria-live="polite" aria-atomic="true">
-              <table id="history-table" role="grid" aria-label="Library history table">
-                <thead>
-                  <tr>
-                    <th>Student Name</th><th>Student ID</th><th>Book Name</th><th>Book Number</th><th>Borrow Date</th><th>Return Date</th><th>Fine (₹)</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </section>
 
-          <!-- Borrow / Return tab (visible for students) -->
-          <section id="tab-borrowreturn" role="tabpanel" tabindex="-1" aria-hidden="true" class="card">
-            <h2>Borrow / Return Books</h2>
-            <div class="search-box" aria-label="Search borrowable books">
-              <input id="student-book-search" type="text" placeholder="Search books by name, author, or number" />
-            </div>
-            <div class="scroll-table" tabindex="0" aria-live="polite" aria-atomic="true">
-              <table id="student-borrow-list-table" role="grid" aria-label="Borrowable books list">
-                <thead><tr><th>Book Name</th><th>Author</th><th>Number</th><th>Status</th><th>Action</th></tr></thead>
-                <tbody></tbody>
-              </table>
+        <!-- Admin Page -->
+        <div id="adminPage" class="page">
+            <!-- Login Form -->
+            <div id="loginForm" class="form-container">
+                <h2 class="text-center mb-3"><i class="fas fa-lock"></i> Admin Login</h2>
+                <form id="adminLogin">
+                    <div class="form-group">
+                        <label for="adminEmail">Email Address</label>
+                        <input type="email" id="adminEmail" class="form-control" placeholder="admin@festival.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Password</label>
+                        <input type="password" id="adminPassword" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <div id="loginError" class="alert alert-danger hidden"></div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
             </div>
 
-            <h2>Your Borrow / Return History</h2>
-            <div class="scroll-table" tabindex="0" aria-live="polite" aria-atomic="true" style="max-height: 300px;">
-              <table id="student-borrow-return-history-table" role="grid" aria-label="Your borrow and return history">
-                <thead><tr><th>Book Name</th><th>Borrow Date</th><th>Return Date</th><th>Fine (₹)</th><th>Action</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </section>
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="hidden">
+                <div class="d-flex justify-between align-center mb-4">
+                    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+                    <button id="addResultBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Result
+                    </button>
+                </div>
 
-          <!-- Profile tab -->
-          <section id="tab-profile" role="tabpanel" tabindex="-1" aria-hidden="true" class="card">
-            <h2>Your Profile</h2>
-            <form id="profile-form" autocomplete="off">
-              <div class="form-group">
-                <label for="profile-username">Username (readonly for students, editable for admin)</label>
-                <input id="profile-username" type="text" readonly />
-              </div>
-              <div class="form-group" id="batch-group" style="display:none;">
-                <label for="profile-batch">Batch Name</label>
-                <input id="profile-batch" type="text" maxlength="50" />
-              </div>
-              <div class="form-group">
-                <label for="profile-current-password">Current Password</label>
-                <input id="profile-current-password" type="password" />
-              </div>
-              <div class="form-group">
-                <label for="profile-new-password">New Password</label>
-                <input id="profile-new-password" type="password" />
-              </div>
-              <button type="submit" class="primary-btn">Update Profile</button>
-            </form>
-          </section>
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="results">
+                        <i class="fas fa-list-ol"></i> Manage Results
+                    </button>
+                    <button class="tab-btn" data-tab="analytics">
+                        <i class="fas fa-chart-pie"></i> Analytics
+                    </button>
+                    <button class="tab-btn" data-tab="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+
+                <!-- Results Tab -->
+                <div id="resultsTab" class="tab-content active">
+                    <div class="filters mb-3">
+                        <input type="text" id="adminSearch" class="form-control" placeholder="Search results...">
+                        <select id="adminFilterStatus" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="published">Published Only</option>
+                            <option value="draft">Draft Only</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Event</th>
+                                    <th>Participant</th>
+                                    <th>College</th>
+                                    <th>Position</th>
+                                    <th>Points</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminResultsTable">
+                                <!-- Admin results will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div id="analyticsTab" class="tab-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-users"></i>
+                            <h3 id="totalParticipants">0</h3>
+                            <p>Total Participants</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-trophy"></i>
+                            <h3 id="totalEvents">0</h3>
+                            <p>Total Events</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <h3 id="totalPoints">0</h3>
+                            <p>Total Points Awarded</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <h3 id="publishedResults">0</h3>
+                            <p>Published Results</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settingsTab" class="tab-content">
+                    <div class="form-container">
+                        <h3 class="mb-3">Admin Settings</h3>
+                        <div class="form-group">
+                            <label>Export Data</label>
+                            <button id="exportBtn" class="btn btn-secondary w-100">
+                                <i class="fas fa-download"></i> Export All Results
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label>Reset Demo Data</label>
+                            <button id="resetBtn" class="btn btn-warning w-100">
+                                <i class="fas fa-redo"></i> Reset Demo Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </main>
-    </section>
-  </main>
+    </div>
 
-  <script>
-    (() => {
-      'use strict';
+    <!-- Add/Edit Result Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> <span id="modalTitle">Add Result</span></h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="resultForm">
+                <input type="hidden" id="resultId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventName">Event Name *</label>
+                        <input type="text" id="eventName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventCategory">Category *</label>
+                        <select id="eventCategory" class="form-control" required>
+                            <option value="">Select Category</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Cultural">Cultural</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Arts">Arts</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
 
-      // DOM Elements
-      const loginView = document.getElementById('login-view');
-      const dashboardView = document.getElementById('dashboard');
-      const loginForm = document.getElementById('login-form');
-      const loginError = document.getElementById('login-error');
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="participantName">Participant Name *</label>
+                        <input type="text" id="participantName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="participantEmail">Email *</label>
+                        <input type="email" id="participantEmail" class="form-control" required>
+                    </div>
+                </div>
 
-      const navButtons = Array.from(document.querySelectorAll('.nav .nav-items button[data-tab]'));
-      const tabContents = Array.from(document.querySelectorAll('.tab-content > section'));
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="college">College/Team *</label>
+                        <input type="text" id="college" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" class="form-control">
+                    </div>
+                </div>
 
-      const profileUsernameInput = document.getElementById('profile-username');
-      const profileBatchInput = document.getElementById('profile-batch');
-      const batchGroup = document.getElementById('batch-group');
-      const profileCurrentPwdInput = document.getElementById('profile-current-password');
-      const profileNewPwdInput = document.getElementById('profile-new-password');
-      const profileForm = document.getElementById('profile-form');
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="position">Position *</label>
+                        <select id="position" class="form-control" required>
+                            <option value="1">1st (Gold)</option>
+                            <option value="2">2nd (Silver)</option>
+                            <option value="3">3rd (Bronze)</option>
+                            <option value="4">4th</option>
+                            <option value="5">5th</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="points">Points Awarded *</label>
+                        <input type="number" id="points" class="form-control" min="0" value="10" required>
+                    </div>
+                </div>
 
-      const addBookForm = document.getElementById('add-book-form');
-      const booksTableBody = document.querySelector('#books-table tbody');
-      const bookSearchInput = document.getElementById('book-search');
-      const bulkBookUpload = document.getElementById('bulk-book-upload');
+                <div class="form-group">
+                    <label for="remarks">Remarks</label>
+                    <textarea id="remarks" class="form-control" rows="3"></textarea>
+                </div>
 
-      const addStudentForm = document.getElementById('add-student-form');
-      const studentsTableBody = document.querySelector('#students-table tbody');
-      const studentSearchInput = document.getElementById('student-search');
-      const bulkStudentUpload = document.getElementById('bulk-student-upload');
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="isPublished"> Publish immediately
+                    </label>
+                </div>
 
-      const historyFilterSelect = document.getElementById('history-filter');
-      const historyStudentNameInput = document.getElementById('history-student-name');
-      const historyTableBody = document.querySelector('#history-table tbody');
-      const downloadPdfBtn = document.getElementById('download-pdf');
-      const downloadWordBtn = document.getElementById('download-word');
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-1">
+                        <i class="fas fa-save"></i> Save Result
+                    </button>
+                    <button type="button" class="btn btn-secondary modal-close">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-      const logoutBtn = document.getElementById('logout-btn');
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="modal">
+        <div class="modal-content" style="background: transparent; box-shadow: none;">
+            <div class="spinner"></div>
+            <p class="text-center mt-2" style="color: white;">Loading...</p>
+        </div>
+    </div>
 
-      // Borrow / Return elements for student
-      const studentBookSearchInput = document.getElementById('student-book-search');
-      const studentBorrowListBody = document.querySelector('#student-borrow-list-table tbody');
-      const studentBorrowReturnHistoryBody = document.querySelector('#student-borrow-return-history-table tbody');
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, get, update, remove, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-      // Book search elements for login page
-      const loginBookSearchInput = document.getElementById('login-book-search');
-      const loginBookResults = document.getElementById('login-book-results');
-
-      // Storage keys
-      const STORAGE = {
-        ADMIN_PWD: 'library_admin_pwd',
-        BOOKS: 'library_books',
-        STUDENTS: 'library_students',
-        BORROWS: 'library_borrows'
-      };
-
-      // Default admin credentials
-      const ADMIN_USERNAME = 'admin';
-      let ADMIN_PASSWORD = localStorage.getItem(STORAGE.ADMIN_PWD) || 'admin123';
-
-      // Data Stores
-      let books = [];
-      let students = [];
-      let borrows = [];
-
-      // Current User
-      let currentUser = null;
-      let currentUserRole = null; // 'admin' or 'student'
-
-      // Utility Functions
-      function saveStorage(key, data) {
-        localStorage.setItem(key, JSON.stringify(data));
-      }
-      function loadStorage(key) {
-        try {
-          const raw = localStorage.getItem(key);
-          return raw ? JSON.parse(raw) : [];
-        } catch { return []; }
-      }
-      function escapeHtml(text) {
-        const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
-        return text.replace(/[&<>"']/g, m => map[m]);
-      }
-      function formatDate(date) {
-        if (!(date instanceof Date)) return '';
-        return date.toLocaleDateString('en-IN', { year:'numeric', month:'short', day:'numeric' });
-      }
-      function debounce(fn, delay) {
-        let timeoutId;
-        return function(...args) {
-          if(timeoutId) clearTimeout(timeoutId);
-          timeoutId = setTimeout(() => fn.apply(this, args), delay);
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDZpjUIKYoE2Y1NXWpEZwJyTGAFU8-eTjI",
+            authDomain: "ne-d23c5.firebaseapp.com",
+            databaseURL: "https://ne-d23c5-default-rtdb.firebaseio.com",
+            projectId: "ne-d23c5",
+            storageBucket: "ne-d23c5.firebasestorage.app",
+            messagingSenderId: "387535908944",
+            appId: "1:387535908944:web:f6710271861e47464a2155",
+            measurementId: "G-MH25GMCYG2"
         };
-      }
-      function showError(msg) {
-        loginError.textContent = msg;
-        loginError.style.display = 'block';
-      }
-      function hideError() {
-        loginError.style.display = 'none';
-        loginError.textContent = '';
-      }
 
-      // Initial Data Load
-      function initData() {
-        books = loadStorage(STORAGE.BOOKS);
-        students = loadStorage(STORAGE.STUDENTS);
-        borrows = loadStorage(STORAGE.BORROWS);
-      }
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
 
-      // Show Dashboard Based on Role
-      function showDashboard() {
-        loginView.style.display = 'none';
-        dashboardView.style.display = 'block';
+        // Export to global scope
+        window.firebase = { database, ref, set, get, update, remove, push, onValue };
+    </script>
 
-        if (currentUserRole === 'admin') {
-          navButtons.forEach(btn => btn.style.display = 'inline-block');
-          batchGroup.style.display = 'none';
-          profileUsernameInput.readOnly = false;
-          profileUsernameInput.value = ADMIN_USERNAME;
-          profileBatchInput.value = '';
-          openSection('books');
-        } else {
-          // Student
-          navButtons.forEach(btn => {
-            btn.style.display = (btn.dataset.tab === 'borrowreturn' || btn.dataset.tab === 'profile') ? 'inline-block' : 'none';
-          });
-          batchGroup.style.display = 'block';
-          profileUsernameInput.readOnly = true;
-          profileUsernameInput.value = currentUser.name;
-          profileBatchInput.value = currentUser.batch || '';
-          openSection('borrowreturn');
-          renderStudentBorrowableBooks('');
-          renderStudentBorrowReturnHistory();
-        }
-        resetNav();
-        renderBooksTable();
-        renderStudentsTable();
-        renderHistoryTable();
-        hideError();
-      }
-      function resetNav(){
-        navButtons.forEach(btn => {
-          if(btn.style.display !== 'none'){
-            btn.classList.add('active');
-            btn.setAttribute('aria-selected', 'true');
-            btn.tabIndex = 0;
-          } else {
-            btn.classList.remove('active');
-            btn.setAttribute('aria-selected', 'false');
-            btn.tabIndex = -1;
-          }
-        });
-      }
+    <script>
+        // ===== GLOBAL STATE =====
+        let currentUser = null;
+        let allResults = [];
+        let allEvents = new Set();
 
-      // Login Handler
-      loginForm.addEventListener('submit', e => {
-        e.preventDefault();
-        hideError();
-        const username = loginForm.username.value.trim();
-        const password = loginForm.password.value.trim();
-
-        if(!username || !password) {
-          showError('Please enter username and password.');
-          return;
-        }
-        if(username.toLowerCase() === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-          currentUser = { username: ADMIN_USERNAME};
-          currentUserRole = 'admin';
-          showDashboard();
-          return;
-        }
-        let student = students.find(s => s.name.toLowerCase() === username.toLowerCase() && s.id === password);
-        if(student) {
-          currentUser = {...student};
-          currentUserRole = 'student';
-          showDashboard();
-          return;
-        }
-        showError('Invalid username or password.');
-      });
-
-      // Logout Handler
-      logoutBtn.addEventListener('click', () => {
-        currentUser = null;
-        currentUserRole = null;
-        dashboardView.style.display = 'none';
-        loginView.style.display = 'flex';
-        loginForm.username.focus();
-        loginForm.reset();
-        clearLoginBookResults();
-        loginBookSearchInput.value = '';
-      });
-
-      // Navigation Tab Switches
-      navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          if(btn.style.display === 'none') return;
-          openSection(btn.dataset.tab);
-          navButtons.forEach(el => {
-            el.classList.remove('active');
-            el.setAttribute('aria-selected', 'false');
-            el.tabIndex = -1;
-          });
-          btn.classList.add('active');
-          btn.setAttribute('aria-selected', 'true');
-          btn.tabIndex = 0;
-
-          if(btn.dataset.tab === 'borrowreturn' && currentUserRole === 'student'){
-            renderStudentBorrowableBooks('');
-            renderStudentBorrowReturnHistory();
-          }
-        });
-      });
-
-      // Book addition (Single)
-      addBookForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const name = document.getElementById('book-name').value.trim();
-        const author = document.getElementById('author-name').value.trim();
-        const number = document.getElementById('book-num').value.trim();
-        if(!name || !author || !number) { alert('Please complete all book fields.'); return; }
-        if(books.some(b => b.number.toLowerCase() === number.toLowerCase())) { alert('Book number must be unique.'); return; }
-        books.push({name, author, number, borrowedBy: null});
-        saveStorage(STORAGE.BOOKS, books);
-        addBookForm.reset();
-        renderBooksTable();
-      });
-
-      // Bulk Book upload (CSV)
-      bulkBookUpload.addEventListener('change', e => {
-        if(e.target.files.length === 0) return;
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const csv = ev.target.result;
-          parseCsvBooks(csv);
-          e.target.value = "";
+        // ===== DOM ELEMENTS =====
+        const pages = {
+            home: document.getElementById('homePage'),
+            results: document.getElementById('resultsPage'),
+            admin: document.getElementById('adminPage')
         };
-        reader.readAsText(file);
-      });
 
-      function parseCsvBooks(csvText) {
-        let lines = csvText.trim().split(/\r?\n/);
-        if(lines.length < 2) { alert('CSV is empty or no data'); return; }
-        let count=0, skipped=0;
-        for(let i=1; i<lines.length; i++){
-          let cols = lines[i].split(",");
-          if(cols.length < 3){ skipped++; continue; }
-          let [name, author, number] = cols.map(c=>c.trim());
-          if(!name || !author || !number || books.some(b => b.number.toLowerCase() === number.toLowerCase())){
-            skipped++;
-            continue;
-          }
-          books.push({name, author, number, borrowedBy: null});
-          count++;
-        }
-        saveStorage(STORAGE.BOOKS, books);
-        renderBooksTable();
-        alert(`Bulk upload complete: added ${count} books, skipped ${skipped}.`);
-      }
+        const modals = {
+            result: document.getElementById('resultModal'),
+            loading: document.getElementById('loadingOverlay')
+        };
 
-      // Book Search and Table Rendering
-      bookSearchInput.addEventListener('input', debounce(renderBooksTable, 250));
-      function renderBooksTable() {
-        const filter = bookSearchInput.value.trim().toLowerCase();
-        let filtered = filter ? books.filter(b => (b.name + b.author + b.number).toLowerCase().includes(filter)) : books;
-        booksTableBody.innerHTML = "";
-        if(filtered.length === 0) {
-          booksTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#9ca3af;">No books found.</td></tr>';
-          return;
-        }
-        filtered.forEach(b => {
-          let status = b.borrowedBy ? `Borrowed by ${escapeHtml(b.borrowedBy.name)}` : 'Available';
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${escapeHtml(b.name)}</td><td>${escapeHtml(b.author)}</td><td>${escapeHtml(b.number)}</td><td>${status}</td><td>
-            <button class="edit-btn" data-book="${b.number}" aria-label="Edit book ${escapeHtml(b.name)}">Edit</button>
-            <button class="delete-btn" data-book="${b.number}" aria-label="Delete book ${escapeHtml(b.name)}">Delete</button>
-          </td>`;
-          booksTableBody.appendChild(tr);
+        // ===== PAGE NAVIGATION =====
+        document.querySelectorAll('[data-page]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = e.target.closest('[data-page]').dataset.page;
+                navigateTo(page);
+            });
         });
-        attachBookEvents();
-      }
-      function attachBookEvents(){
-        document.querySelectorAll('button.edit-btn[data-book]').forEach(btn => {
-          btn.onclick = () => {
-            const bnum = btn.dataset.book;
-            const book = books.find(b=>b.number === bnum);
-            if(book) openEditModal('book', book);
-          };
-        });
-        document.querySelectorAll('button.delete-btn[data-book]').forEach(btn =>{
-          btn.onclick = () => {
-            if(confirm("Delete this book and associated borrow records?")){
-              books = books.filter(b=>b.number !== btn.dataset.book);
-              borrows = borrows.filter(b=>b.bookNumber !== btn.dataset.book);
-              saveStorage(STORAGE.BOOKS, books);
-              saveStorage(STORAGE.BORROWS, borrows);
-              renderBooksTable();
-              renderHistoryTable();
+
+        function navigateTo(page) {
+            // Update active page
+            Object.values(pages).forEach(p => p.classList.remove('active'));
+            pages[page].classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`[data-page="${page}"]`).classList.add('active');
+            
+            // Show/hide logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (page === 'admin' && currentUser) {
+                logoutBtn.classList.remove('hidden');
+            } else {
+                logoutBtn.classList.add('hidden');
             }
-          };
-        });
-      }
-
-      // Students Add (single and bulk)
-      addStudentForm.addEventListener('submit', e=>{
-        e.preventDefault();
-        const name = document.getElementById('student-name').value.trim();
-        const id = document.getElementById('student-id').value.trim();
-        if(!name || !id){ alert("Please fill all student fields."); return; }
-        if(students.some(s=>s.id.toLowerCase() === id.toLowerCase() || s.name.toLowerCase() === name.toLowerCase())){
-          alert("Duplicate student id or name.");
-          return;
-        }
-        students.push({name, id, batch: ""});
-        saveStorage(STORAGE.STUDENTS, students);
-        addStudentForm.reset();
-        renderStudentsTable();
-      });
-      bulkStudentUpload.addEventListener('change', e=>{
-        if(!e.target.files.length) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const csv = ev.target.result;
-          parseCsvStudents(csv);
-          e.target.value = "";
-        };
-        reader.readAsText(e.target.files[0]);
-      });
-      function parseCsvStudents(csv){
-        const lines = csv.trim().split(/\r?\n/);
-        if(lines.length<2){alert("No data in CSV."); return;}
-        let success = 0, skipped = 0;
-        for(let i=1; i<lines.length; i++){
-          const cols = lines[i].split(",");
-          if(cols.length<2){ skipped++; continue; }
-          const [name, id] = cols.map(c=>c.trim());
-          if(!name || !id || students.some(s=>s.id.toLowerCase() === id.toLowerCase() || s.name.toLowerCase() === name.toLowerCase())){
-            skipped++;
-            continue;
-          }
-          students.push({name, id, batch: ""});
-          success++;
-        }
-        saveStorage(STORAGE.STUDENTS, students);
-        renderStudentsTable();
-        alert(`Bulk upload complete: ${success} students added, ${skipped} skipped.`);
-      }
-
-      studentSearchInput.addEventListener('input', debounce(renderStudentsTable, 250));
-      function renderStudentsTable(){
-        const filter = studentSearchInput.value.trim().toLowerCase();
-        let filtered = filter? students.filter(s => (s.name + s.id).toLowerCase().includes(filter)) : students;
-        studentsTableBody.innerHTML = '';
-        if(filtered.length === 0){
-          studentsTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#9ca3af;">No students found.</td></tr>';
-          return;
-        }
-        filtered.forEach(s => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.id)}</td><td>${escapeHtml(s.batch || '')}</td><td>
-            <button class="edit-btn" data-student="${s.id}">Edit</button><button class="delete-btn" data-student="${s.id}">Delete</button>
-          </td>`;
-          studentsTableBody.appendChild(tr);
-        });
-        attachStudentEvents();
-      }
-      function attachStudentEvents(){
-        document.querySelectorAll('button.edit-btn[data-student]').forEach(btn =>{
-          btn.onclick = () => {
-            const sid = btn.dataset.student;
-            const student = students.find(s => s.id === sid);
-            if(student) openEditModal('student', student);
-          };
-        });
-        document.querySelectorAll('button.delete-btn[data-student]').forEach(btn => {
-          btn.onclick = () => {
-            if(confirm("Delete this student and all related borrow records?")){
-              let sid = btn.dataset.student;
-              students = students.filter(s => s.id !== sid);
-              borrows = borrows.filter(b => b.studentId !== sid);
-              saveStorage(STORAGE.STUDENTS, students);
-              saveStorage(STORAGE.BORROWS, borrows);
-              renderStudentsTable();
-              renderHistoryTable();
+            
+            // Load data for the page
+            if (page === 'results') {
+                loadPublicResults();
+                loadLeaderboard();
+            } else if (page === 'admin' && currentUser) {
+                loadAdminResults();
+                loadAnalytics();
             }
-          };
+        }
+
+        // ===== MODAL FUNCTIONS =====
+        function showModal(modal) {
+            modal.classList.add('active');
+        }
+
+        function hideModal(modal) {
+            modal.classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                hideModal(modals.result);
+            });
         });
-      }
 
-      // History Filter change events
-      historyFilterSelect.addEventListener('change', () => {
-        historyStudentNameInput.style.display = (historyFilterSelect.value === "studentwise") ? "inline-block" : "none";
-        if(historyFilterSelect.value !== "studentwise") historyStudentNameInput.value = "";
-        renderHistoryTable();
-      });
-      historyStudentNameInput.addEventListener('input', debounce(renderHistoryTable, 300));
-
-      function renderHistoryTable() {
-        const filter = historyFilterSelect.value;
-        const studentFilter = historyStudentNameInput.value.trim().toLowerCase();
-        let filtered = borrows.filter(b => b.returnDate);
-        const now = new Date();
-
-        if(filter==='daily') {
-          filtered = filtered.filter(b => new Date(b.returnDate).toDateString() === now.toDateString());
-        } else if(filter==='weekly') {
-          filtered = filtered.filter(b => {
-            const retD = new Date(b.returnDate);
-            let days = (now-retD)/(1000*60*60*24);
-            return days>=0 && days<=7;
-          });
-        } else if(filter==='monthly') {
-          filtered = filtered.filter(b => {
-            const retD = new Date(b.returnDate);
-            return retD.getMonth() === now.getMonth() && retD.getFullYear() === now.getFullYear();
-          });
-        } else if(filter==='yearly') {
-          filtered = filtered.filter(b => new Date(b.returnDate).getFullYear() === now.getFullYear());
-        } else if(filter==='studentwise' && studentFilter) {
-          filtered = filtered.filter(b => b.studentName.toLowerCase().includes(studentFilter));
-        } else if(filter==='return-daywise') {
-          filtered.sort((a,b) => new Date(a.returnDate) - new Date(b.returnDate));
-        }
-
-        historyTableBody.innerHTML = '';
-        if(filtered.length === 0){
-          historyTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#9ca3af;">No records found.</td></tr>';
-          return;
-        }
-        filtered.forEach(b => {
-          const borrowDate = formatDate(new Date(b.borrowDate));
-          const returnDate = formatDate(new Date(b.returnDate));
-          const fine = b.fine ? b.fine.toFixed(2) : "0";
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${escapeHtml(b.studentName)}</td><td>${escapeHtml(b.studentId)}</td><td>${escapeHtml(b.bookName)}</td><td>${escapeHtml(b.bookNumber)}</td><td>${borrowDate}</td><td>${returnDate}</td><td>${fine}</td>`;
-          historyTableBody.appendChild(tr);
+        // Click outside modal to close
+        modals.result.addEventListener('click', (e) => {
+            if (e.target === modals.result) {
+                hideModal(modals.result);
+            }
         });
-      }
 
-      // Export functions for history
-      downloadPdfBtn.addEventListener('click', () => exportHistory('pdf'));
-      downloadWordBtn.addEventListener('click', () => exportHistory('word'));
-
-      function exportHistory(format){
-        const header = "KGN Dawa College Mithur - Library History";
-        const tableHTML = document.getElementById('history-table').outerHTML;
-        const content = `<html><head><title>${header}</title><style>body{font-family:Arial,sans-serif;padding:20px;}table{border-collapse:collapse;width:100%;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f2f2f2;}</style></head><body><h1>${header}</h1>${tableHTML}</body></html>`;
-        if(format === 'pdf'){
-          const win = window.open('', '_blank', 'width=900,height=700');
-          win.document.write(content);
-          win.document.close();
-          win.focus();
-          win.onload = () => win.print();
-        } else {
-          const blob = new Blob(['\ufeff', content], {type: 'application/msword'});
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'library-history.doc';
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          }, 0);
+        // ===== LOADING FUNCTIONS =====
+        function showLoading() {
+            showModal(modals.loading);
         }
-      }
 
-      // Login page book search logic - auto search on input with debounce
-      loginBookSearchInput.addEventListener('input', debounce(performLoginBookSearch, 300));
-
-      function performLoginBookSearch() {
-        const query = loginBookSearchInput.value.trim().toLowerCase();
-        clearLoginBookResults();
-        if (!query) return;
-        const matches = books.filter(b => (b.name + ' ' + b.author + ' ' + b.number).toLowerCase().includes(query));
-        if (matches.length === 0) {
-          loginBookResults.style.display = 'block';
-          loginBookResults.innerHTML = '<ul><li tabindex="0">No books found.</li></ul>';
-          return;
+        function hideLoading() {
+            hideModal(modals.loading);
         }
-        const ul = document.createElement('ul');
-        matches.forEach(book => {
-          const li = document.createElement('li');
-          li.tabIndex = 0;
-          li.textContent = `${book.name} by ${book.author} (Number: ${book.number}) - ${book.borrowedBy ? 'Borrowed' : 'Available'}`;
-          ul.appendChild(li);
+
+        // ===== FIREBASE FUNCTIONS =====
+        function saveResult(resultData, id = null) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    if (id) {
+                        // Update existing result
+                        await update(window.firebase.ref(window.firebase.database, `results/${id}`), {
+                            ...resultData,
+                            updatedAt: Date.now()
+                        });
+                    } else {
+                        // Create new result
+                        const newResultRef = window.firebase.push(window.firebase.ref(window.firebase.database, 'results'));
+                        await window.firebase.set(newResultRef, {
+                            ...resultData,
+                            createdAt: Date.now(),
+                            updatedAt: Date.now()
+                        });
+                        id = newResultRef.key;
+                    }
+                    resolve(id);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        function deleteResult(id) {
+            return window.firebase.remove(window.firebase.ref(window.firebase.database, `results/${id}`));
+        }
+
+        function loadAllResults(callback) {
+            const resultsRef = window.firebase.ref(window.firebase.database, 'results');
+            window.firebase.onValue(resultsRef, (snapshot) => {
+                allResults = [];
+                allEvents.clear();
+                
+                snapshot.forEach((childSnapshot) => {
+                    const result = {
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    };
+                    allResults.push(result);
+                    
+                    if (result.eventName) {
+                        allEvents.add(result.eventName);
+                    }
+                });
+                
+                if (callback) callback();
+            });
+        }
+
+        // ===== PUBLIC RESULTS PAGE =====
+        function loadPublicResults() {
+            showLoading();
+            
+            // Populate events filter
+            const eventFilter = document.getElementById('filterEvent');
+            eventFilter.innerHTML = '<option value="">All Events</option>';
+            allEvents.forEach(event => {
+                const option = document.createElement('option');
+                option.value = event;
+                option.textContent = event;
+                eventFilter.appendChild(option);
+            });
+            
+            filterAndDisplayPublicResults();
+            hideLoading();
+        }
+
+        function filterAndDisplayPublicResults() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('filterCategory').value;
+            const event = document.getElementById('filterEvent').value;
+            const sortBy = document.getElementById('sortResults').value;
+            
+            // Filter results
+            let filtered = allResults.filter(result => 
+                result.isPublished === true
+            );
+            
+            // Apply filters
+            if (searchTerm) {
+                filtered = filtered.filter(result => 
+                    result.participantName?.toLowerCase().includes(searchTerm) ||
+                    result.college?.toLowerCase().includes(searchTerm) ||
+                    result.eventName?.toLowerCase().includes(searchTerm) ||
+                    result.department?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (category) {
+                filtered = filtered.filter(result => result.eventCategory === category);
+            }
+            
+            if (event) {
+                filtered = filtered.filter(result => result.eventName === event);
+            }
+            
+            // Sort results
+            filtered.sort((a, b) => {
+                if (sortBy === 'position') return a.position - b.position;
+                if (sortBy === 'points') return b.points - a.points;
+                if (sortBy === 'name') return a.participantName.localeCompare(b.participantName);
+                if (sortBy === 'date') return (b.createdAt || 0) - (a.createdAt || 0);
+                return 0;
+            });
+            
+            displayPublicResults(filtered);
+        }
+
+        function displayPublicResults(results) {
+            const tableBody = document.getElementById('resultsTableBody');
+            const cardsGrid = document.getElementById('resultsGrid');
+            const noResultsTable = document.getElementById('noResultsTable');
+            const noResultsCards = document.getElementById('noResultsCards');
+            
+            // Clear previous results
+            tableBody.innerHTML = '';
+            cardsGrid.innerHTML = '';
+            
+            if (results.length === 0) {
+                noResultsTable.classList.remove('hidden');
+                noResultsCards.classList.remove('hidden');
+                return;
+            }
+            
+            noResultsTable.classList.add('hidden');
+            noResultsCards.classList.add('hidden');
+            
+            // Display in table view
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                
+                const positionClass = result.position <= 3 ? `position-${result.position}` : 'position-other';
+                const medalIcon = result.position === 1 ? '🥇' : 
+                                 result.position === 2 ? '🥈' : 
+                                 result.position === 3 ? '🥉' : `${result.position}th`;
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="position-badge ${positionClass}">${medalIcon}</div>
+                    </td>
+                    <td>
+                        <strong>${result.participantName}</strong>
+                        ${result.participantEmail ? `<br><small>${result.participantEmail}</small>` : ''}
+                    </td>
+                    <td>${result.eventName || 'N/A'}</td>
+                    <td><span class="badge">${result.eventCategory || ''}</span></td>
+                    <td>${result.college || 'N/A'}</td>
+                    <td><strong>${result.points || 0}</strong></td>
+                    <td>
+                        ${result.position === 1 ? '🏆 Gold Medal' : 
+                          result.position === 2 ? '🥈 Silver Medal' : 
+                          result.position === 3 ? '🥉 Bronze Medal' : 
+                          'Certificate'}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+                
+                // Display in cards view
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h4>${result.participantName}</h4>
+                            <p>${result.college || ''}</p>
+                        </div>
+                        <div class="position-badge ${positionClass}">${medalIcon}</div>
+                    </div>
+                    <div class="mb-2">
+                        <strong>${result.eventName || 'N/A'}</strong>
+                        <div class="badge">${result.eventCategory || ''}</div>
+                    </div>
+                    <div class="d-flex justify-between">
+                        <span>Points: <strong>${result.points || 0}</strong></span>
+                        <span>${result.position === 1 ? '🏆 Gold' : 
+                               result.position === 2 ? '🥈 Silver' : 
+                               result.position === 3 ? '🥉 Bronze' : 'Participant'}</span>
+                    </div>
+                `;
+                cardsGrid.appendChild(card);
+            });
+        }
+
+        // ===== LEADERBOARD =====
+        function loadLeaderboard() {
+            const publishedResults = allResults.filter(r => r.isPublished);
+            const leaderboard = {};
+            
+            publishedResults.forEach(result => {
+                const key = result.participantEmail || result.participantName;
+                if (!leaderboard[key]) {
+                    leaderboard[key] = {
+                        name: result.participantName,
+                        email: result.participantEmail,
+                        college: result.college,
+                        events: 0,
+                        gold: 0,
+                        silver: 0,
+                        bronze: 0,
+                        totalPoints: 0
+                    };
+                }
+                
+                const participant = leaderboard[key];
+                participant.events++;
+                participant.totalPoints += result.points || 0;
+                
+                if (result.position === 1) participant.gold++;
+                if (result.position === 2) participant.silver++;
+                if (result.position === 3) participant.bronze++;
+            });
+            
+            // Convert to array and sort
+            const leaderboardArray = Object.values(leaderboard)
+                .sort((a, b) => b.totalPoints - a.totalPoints);
+            
+            displayLeaderboard(leaderboardArray);
+        }
+
+        function displayLeaderboard(leaderboard) {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
+            
+            leaderboard.forEach((participant, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <strong>${participant.name}</strong>
+                        ${participant.email ? `<br><small>${participant.email}</small>` : ''}
+                    </td>
+                    <td>${participant.college || 'N/A'}</td>
+                    <td>${participant.events}</td>
+                    <td>${participant.gold}</td>
+                    <td>${participant.silver}</td>
+                    <td>${participant.bronze}</td>
+                    <td><strong>${participant.totalPoints}</strong></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ===== ADMIN FUNCTIONS =====
+        // Admin Login
+        document.getElementById('adminLogin').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            // Demo admin credentials
+            if (email === 'admin@festival.com' && password === 'admin123') {
+                currentUser = { email, role: 'admin' };
+                localStorage.setItem('festivalAdmin', 'true');
+                
+                // Show admin dashboard
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                
+                // Load admin data
+                loadAdminResults();
+                loadAnalytics();
+                
+                showNotification('Login successful!', 'success');
+            } else {
+                errorDiv.textContent = 'Invalid credentials. Use admin@festival.com / admin123';
+                errorDiv.classList.remove('hidden');
+            }
         });
-        loginBookResults.appendChild(ul);
-        loginBookResults.style.display = 'block';
-      }
 
-      function clearLoginBookResults() {
-        loginBookResults.style.display = 'none';
-        loginBookResults.innerHTML = '';
-      }
-
-      // Student Borrow / Return - auto search and render
-      studentBookSearchInput.addEventListener('input', debounce(renderStudentBorrowableBooks, 300));
-
-      function renderStudentBorrowableBooks() {
-        if (currentUserRole !== 'student') return;
-        const filter = studentBookSearchInput.value.trim().toLowerCase();
-        let filtered = filter ? books.filter(b => (b.name + b.author + b.number).toLowerCase().includes(filter)) : books;
-        studentBorrowListBody.innerHTML = '';
-        if (!filtered.length) {
-          studentBorrowListBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#9ca3af;">No books found.</td></tr>';
-          return;
-        }
-        filtered.forEach(b => {
-          const canBorrow = !b.borrowedBy;
-          const status = canBorrow ? 'Available' : `Borrowed by ${escapeHtml(b.borrowedBy.name)}`;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${escapeHtml(b.name)}</td><td>${escapeHtml(b.author)}</td><td>${escapeHtml(b.number)}</td><td>${status}</td><td>${canBorrow ? '<button class="borrow-btn">Borrow</button>' : ''}</td>`;
-          if (canBorrow) {
-            tr.querySelector('button.borrow-btn').addEventListener('click', () => borrowBook(b.number));
-          }
-          studentBorrowListBody.appendChild(tr);
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            currentUser = null;
+            localStorage.removeItem('festivalAdmin');
+            
+            // Show login form
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            
+            // Clear form
+            document.getElementById('adminLogin').reset();
+            document.getElementById('loginError').classList.add('hidden');
+            
+            showNotification('Logged out successfully', 'info');
         });
-      }
 
-      function borrowBook(bookNumber) {
-        if (currentUserRole !== 'student') {
-          alert("Only students can borrow books.");
-          return;
+        // Check if already logged in
+        if (localStorage.getItem('festivalAdmin') === 'true') {
+            currentUser = { email: 'admin@festival.com', role: 'admin' };
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
         }
-        const student = students.find(s => s.name === currentUser.name && s.id === currentUser.id);
-        if (!student) { alert("Student info missing."); return; }
-        const book = books.find(b => b.number === bookNumber);
-        if (!book || book.borrowedBy) { alert("Book not available."); return; }
-        const now = new Date().toISOString();
-        borrows.push({
-          studentName: student.name,
-          studentId: student.id,
-          bookName: book.name,
-          bookNumber: book.number,
-          borrowDate: now,
-          returnDate: null,
-          fine: 0,
+
+        // Load Admin Results
+        function loadAdminResults() {
+            const tbody = document.getElementById('adminResultsTable');
+            const searchInput = document.getElementById('adminSearch');
+            const statusFilter = document.getElementById('adminFilterStatus');
+            
+            // Filter results
+            let filtered = [...allResults];
+            
+            if (searchInput.value) {
+                const searchTerm = searchInput.value.toLowerCase();
+                filtered = filtered.filter(result => 
+                    result.participantName?.toLowerCase().includes(searchTerm) ||
+                    result.eventName?.toLowerCase().includes(searchTerm) ||
+                    result.college?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (statusFilter.value === 'published') {
+                filtered = filtered.filter(result => result.isPublished === true);
+            } else if (statusFilter.value === 'draft') {
+                filtered = filtered.filter(result => !result.isPublished);
+            }
+            
+            // Sort by creation date (newest first)
+            filtered.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
+            displayAdminResults(filtered);
+        }
+
+        function displayAdminResults(results) {
+            const tbody = document.getElementById('adminResultsTable');
+            tbody.innerHTML = '';
+            
+            if (results.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <i class="fas fa-search mb-2" style="font-size: 2rem; color: var(--gray);"></i>
+                            <p>No results found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                
+                const status = result.isPublished ? 
+                    '<span class="badge badge-success">Published</span>' : 
+                    '<span class="badge badge-warning">Draft</span>';
+                
+                row.innerHTML = `
+                    <td>
+                        <strong>${result.eventName || 'N/A'}</strong>
+                        <br><small>${result.eventCategory || ''}</small>
+                    </td>
+                    <td>
+                        <strong>${result.participantName}</strong>
+                        <br><small>${result.participantEmail || ''}</small>
+                    </td>
+                    <td>${result.college || 'N/A'}</td>
+                    <td>
+                        <div class="position-badge ${result.position <= 3 ? `position-${result.position}` : 'position-other'}">
+                            ${result.position === 1 ? '🥇' : 
+                              result.position === 2 ? '🥈' : 
+                              result.position === 3 ? '🥉' : result.position}
+                        </div>
+                    </td>
+                    <td><strong>${result.points || 0}</strong></td>
+                    <td>${status}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <button onclick="editResult('${result.id}')" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="togglePublish('${result.id}', ${!result.isPublished})" class="btn btn-sm ${result.isPublished ? 'btn-warning' : 'btn-success'}">
+                                <i class="fas ${result.isPublished ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                            </button>
+                            <button onclick="deleteResultAction('${result.id}')" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Admin Actions
+        window.editResult = function(id) {
+            const result = allResults.find(r => r.id === id);
+            if (!result) return;
+            
+            document.getElementById('modalTitle').textContent = 'Edit Result';
+            document.getElementById('resultId').value = id;
+            document.getElementById('eventName').value = result.eventName || '';
+            document.getElementById('eventCategory').value = result.eventCategory || '';
+            document.getElementById('participantName').value = result.participantName || '';
+            document.getElementById('participantEmail').value = result.participantEmail || '';
+            document.getElementById('college').value = result.college || '';
+            document.getElementById('department').value = result.department || '';
+            document.getElementById('position').value = result.position || 1;
+            document.getElementById('points').value = result.points || 0;
+            document.getElementById('remarks').value = result.remarks || '';
+            document.getElementById('isPublished').checked = result.isPublished || false;
+            
+            showModal(modals.result);
+        };
+
+        window.togglePublish = async function(id, publish) {
+            try {
+                await update(window.firebase.ref(window.firebase.database, `results/${id}`), {
+                    isPublished: publish,
+                    publishedAt: publish ? Date.now() : null
+                });
+                
+                showNotification(
+                    publish ? 'Result published successfully!' : 'Result unpublished successfully!',
+                    'success'
+                );
+            } catch (error) {
+                console.error('Error updating publish status:', error);
+                showNotification('Error updating status', 'error');
+            }
+        };
+
+        window.deleteResultAction = function(id) {
+            if (confirm('Are you sure you want to delete this result? This action cannot be undone.')) {
+                deleteResult(id)
+                    .then(() => {
+                        showNotification('Result deleted successfully!', 'success');
+                    })
+                    .catch(error => {
+                        console.error('Error deleting result:', error);
+                        showNotification('Error deleting result', 'error');
+                    });
+            }
+        };
+
+        // Add Result Button
+        document.getElementById('addResultBtn').addEventListener('click', () => {
+            document.getElementById('modalTitle').textContent = 'Add New Result';
+            document.getElementById('resultForm').reset();
+            document.getElementById('resultId').value = '';
+            document.getElementById('isPublished').checked = false;
+            showModal(modals.result);
         });
-        book.borrowedBy = { name: student.name, id: student.id };
-        saveStorage(STORAGE.BORROWS, borrows);
-        saveStorage(STORAGE.BOOKS, books);
-        renderStudentBorrowableBooks();
-        renderStudentBorrowReturnHistory();
-        renderBooksTable();
-        alert("Book borrowed successfully.");
-      }
 
-      function renderStudentBorrowReturnHistory() {
-        if (currentUserRole !== 'student') return;
-        const recs = borrows.filter(b => b.studentId === currentUser.id);
-        studentBorrowReturnHistoryBody.innerHTML = '';
-        if (!recs.length) {
-          studentBorrowReturnHistoryBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#9ca3af;">No borrowing records.</td></tr>';
-          return;
-        }
-        recs.forEach((b, i) => {
-          const borrowDate = formatDate(new Date(b.borrowDate));
-          const returnDate = b.returnDate ? formatDate(new Date(b.returnDate)) : "Not returned";
-          const fine = b.fine ? b.fine.toFixed(2) : "0";
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${escapeHtml(b.bookName)}</td><td>${borrowDate}</td><td>${returnDate}</td><td>${fine}</td><td>${!b.returnDate ? '<button class="return-btn">Return</button>' : ''}</td>`;
-          if (!b.returnDate) {
-            tr.querySelector('button.return-btn').addEventListener('click', () => returnBook(i));
-          }
-          studentBorrowReturnHistoryBody.appendChild(tr);
+        // Save Result Form
+        document.getElementById('resultForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('resultId').value;
+            const resultData = {
+                eventName: document.getElementById('eventName').value,
+                eventCategory: document.getElementById('eventCategory').value,
+                participantName: document.getElementById('participantName').value,
+                participantEmail: document.getElementById('participantEmail').value,
+                college: document.getElementById('college').value,
+                department: document.getElementById('department').value,
+                position: parseInt(document.getElementById('position').value),
+                points: parseInt(document.getElementById('points').value),
+                remarks: document.getElementById('remarks').value,
+                isPublished: document.getElementById('isPublished').checked
+            };
+            
+            showLoading();
+            try {
+                await saveResult(resultData, id || null);
+                hideModal(modals.result);
+                showNotification(
+                    id ? 'Result updated successfully!' : 'Result added successfully!',
+                    'success'
+                );
+                loadAdminResults();
+                loadAnalytics();
+                
+                // Also reload public results if published
+                if (resultData.isPublished) {
+                    filterAndDisplayPublicResults();
+                    loadLeaderboard();
+                }
+            } catch (error) {
+                console.error('Error saving result:', error);
+                showNotification('Error saving result', 'error');
+            } finally {
+                hideLoading();
+            }
         });
-      }
 
-      function returnBook(index) {
-        if (currentUserRole !== 'student') {
-          alert("Only students can return books.");
-          return;
+        // ===== ANALYTICS =====
+        function loadAnalytics() {
+            const published = allResults.filter(r => r.isPublished).length;
+            const uniqueEvents = new Set(allResults.map(r => r.eventName)).size;
+            const totalPoints = allResults.reduce((sum, r) => sum + (r.points || 0), 0);
+            const uniqueParticipants = new Set(allResults.map(r => r.participantEmail || r.participantName)).size;
+            
+            document.getElementById('totalParticipants').textContent = uniqueParticipants;
+            document.getElementById('totalEvents').textContent = uniqueEvents;
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('publishedResults').textContent = published;
         }
-        const record = borrows[index];
-        if (!record || record.returnDate) { alert("Invalid return operation."); return; }
-        const returnDate = new Date();
-        const borrowDate = new Date(record.borrowDate);
-        const days = Math.floor((returnDate - borrowDate) / (1000 * 60 * 60 * 24));
-        const fine = days > 7 ? (days - 7) * 5 : 0;
-        record.returnDate = returnDate.toISOString();
-        record.fine = fine;
-        const book = books.find(b => b.number === record.bookNumber);
-        if (book) book.borrowedBy = null;
-        saveStorage(STORAGE.BORROWS, borrows);
-        saveStorage(STORAGE.BOOKS, books);
-        renderStudentBorrowReturnHistory();
-        renderStudentBorrowableBooks();
-        renderBooksTable();
-        renderHistoryTable();
-        alert(`Book returned successfully${fine > 0 ? `; Fine ₹${fine}` : ''}`);
-      }
 
-      // Profile Update
-      profileForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const newUsername = profileUsernameInput.value.trim();
-        const batch = profileBatchInput.value.trim();
-        const currentPwd = profileCurrentPwdInput.value;
-        const newPwd = profileNewPwdInput.value;
-        if (currentUserRole === 'admin') {
-          if (currentPwd !== ADMIN_PASSWORD) { alert("Current password incorrect."); return; }
-          if (newPwd && newPwd.length < 4) { alert("New password must be at least 4 characters."); return; }
-          if (newUsername !== ADMIN_USERNAME) { alert("Admin username cannot be changed."); profileUsernameInput.value = ADMIN_USERNAME; return; }
-          if (newPwd) { ADMIN_PASSWORD = newPwd; localStorage.setItem(STORAGE.ADMIN_PWD, newPwd); alert("Admin password changed."); }
-          else alert("Profile updated.");
-          profileCurrentPwdInput.value = ""; profileNewPwdInput.value = "";
-        } else {
-          if (currentPwd && currentPwd !== currentUser.id) { alert("Current password incorrect."); return; }
-          if (newPwd && newPwd.length < 4) { alert("New password must be at least 4 characters."); return; }
-          const idx = students.findIndex(s => s.name === currentUser.name && s.id === currentUser.id);
-          if (idx === -1) { alert("Student record not found."); return; }
-          students[idx].batch = batch;
-          if (newPwd) { students[idx].id = newPwd; currentUser.id = newPwd; alert("Password changed."); }
-          else alert("Profile updated.");
-          saveStorage(STORAGE.STUDENTS, students);
-          profileCurrentPwdInput.value = ""; profileNewPwdInput.value = "";
-        }
-      });
-
-      // Initialize data and UI
-      document.addEventListener('DOMContentLoaded', () => {
-        initData();
-        loginForm.username.focus();
-        renderBooksTable();
-        renderStudentsTable();
-        renderHistoryTable();
-      });
-
-      // Modal edit placeholder
-      function openEditModal(type, data) {
-        alert('Edit feature is not implemented in this demo.');
-      }
-
-      // Section open function
-      function openSection(name) {
-        tabContents.forEach(sect => {
-          if (sect.id === 'tab-' + name) {
-            sect.classList.add('active');
-            sect.setAttribute('aria-hidden', 'false');
-            sect.tabIndex = 0;
-          } else {
-            sect.classList.remove('active');
-            sect.setAttribute('aria-hidden', 'true');
-            sect.tabIndex = -1;
-          }
+        // ===== SEARCH & FILTER EVENT LISTENERS =====
+        // Public results search
+        document.getElementById('searchBtn').addEventListener('click', filterAndDisplayPublicResults);
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') filterAndDisplayPublicResults();
         });
-      }
+        document.getElementById('filterCategory').addEventListener('change', filterAndDisplayPublicResults);
+        document.getElementById('filterEvent').addEventListener('change', filterAndDisplayPublicResults);
+        document.getElementById('sortResults').addEventListener('change', filterAndDisplayPublicResults);
 
-    })();
-  </script>
+        // Admin results search
+        document.getElementById('adminSearch').addEventListener('input', loadAdminResults);
+        document.getElementById('adminFilterStatus').addEventListener('change', loadAdminResults);
+
+        // ===== VIEW TOGGLE =====
+        document.getElementById('tableViewBtn').addEventListener('click', () => {
+            document.getElementById('tableViewBtn').classList.add('active');
+            document.getElementById('cardViewBtn').classList.remove('active');
+            document.getElementById('tableView').classList.remove('hidden');
+            document.getElementById('cardView').classList.add('hidden');
+        });
+
+        document.getElementById('cardViewBtn').addEventListener('click', () => {
+            document.getElementById('cardViewBtn').classList.add('active');
+            document.getElementById('tableViewBtn').classList.remove('active');
+            document.getElementById('cardView').classList.remove('hidden');
+            document.getElementById('tableView').classList.add('hidden');
+        });
+
+        // ===== TAB FUNCTIONALITY =====
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.tab}Tab`).classList.add('active');
+            });
+        });
+
+        // ===== EXPORT FUNCTION =====
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const dataStr = JSON.stringify(allResults, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'festival-results-export.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Data exported successfully!', 'success');
+        });
+
+        // ===== RESET DEMO DATA =====
+        document.getElementById('resetBtn').addEventListener('click', async () => {
+            if (confirm('This will reset all data to demo data. Are you sure?')) {
+                showLoading();
+                try {
+                    // Clear all existing data
+                    await remove(window.firebase.ref(window.firebase.database, 'results'));
+                    
+                    // Add demo data
+                    const demoResults = [
+                        {
+                            eventName: "100m Sprint",
+                            eventCategory: "Sports",
+                            participantName: "John Smith",
+                            participantEmail: "john@example.com",
+                            college: "ABC University",
+                            department: "Engineering",
+                            position: 1,
+                            points: 10,
+                            remarks: "Excellent performance",
+                            isPublished: true,
+                            createdAt: Date.now() - 86400000
+                        },
+                        {
+                            eventName: "100m Sprint",
+                            eventCategory: "Sports",
+                            participantName: "Emma Wilson",
+                            participantEmail: "emma@example.com",
+                            college: "XYZ College",
+                            department: "Science",
+                            position: 2,
+                            points: 8,
+                            remarks: "Great effort",
+                            isPublished: true,
+                            createdAt: Date.now() - 86400000
+                        },
+                        {
+                            eventName: "Dance Competition",
+                            eventCategory: "Cultural",
+                            participantName: "Sarah Johnson",
+                            participantEmail: "sarah@example.com",
+                            college: "ABC University",
+                            department: "Arts",
+                            position: 1,
+                            points: 10,
+                            remarks: "Outstanding performance",
+                            isPublished: true,
+                            createdAt: Date.now() - 43200000
+                        },
+                        {
+                            eventName: "Debate Competition",
+                            eventCategory: "Academic",
+                            participantName: "Michael Brown",
+                            participantEmail: "michael@example.com",
+                            college: "LMN Institute",
+                            department: "Law",
+                            position: 1,
+                            points: 10,
+                            remarks: "Very persuasive arguments",
+                            isPublished: true,
+                            createdAt: Date.now() - 21600000
+                        },
+                        {
+                            eventName: "Painting Competition",
+                            eventCategory: "Arts",
+                            participantName: "Lisa Wong",
+                            participantEmail: "lisa@example.com",
+                            college: "XYZ College",
+                            department: "Fine Arts",
+                            position: 1,
+                            points: 10,
+                            remarks: "Creative artwork",
+                            isPublished: false,
+                            createdAt: Date.now() - 7200000
+                        }
+                    ];
+                    
+                    // Save demo data
+                    for (const result of demoResults) {
+                        const newResultRef = push(ref(window.firebase.database, 'results'));
+                        await set(newResultRef, result);
+                    }
+                    
+                    showNotification('Demo data reset successfully!', 'success');
+                    loadAdminResults();
+                    loadPublicResults();
+                    loadLeaderboard();
+                    loadAnalytics();
+                } catch (error) {
+                    console.error('Error resetting data:', error);
+                    showNotification('Error resetting data', 'error');
+                } finally {
+                    hideLoading();
+                }
+            }
+        });
+
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.maxWidth = '300px';
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                  type === 'error' ? 'exclamation-circle' : 
+                                  type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // ===== INITIALIZE APP =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load all results
+            loadAllResults(() => {
+                // Check current page and load appropriate data
+                const currentPage = document.querySelector('.page.active').id.replace('Page', '');
+                if (currentPage === 'results') {
+                    loadPublicResults();
+                    loadLeaderboard();
+                } else if (currentPage === 'admin' && currentUser) {
+                    loadAdminResults();
+                    loadAnalytics();
+                }
+            });
+            
+            // Show welcome message
+            setTimeout(() => {
+                if (!localStorage.getItem('festivalWelcomeShown')) {
+                    showNotification('Welcome to Festival Results System! Use admin@festival.com / admin123 for admin access', 'info');
+                    localStorage.setItem('festivalWelcomeShown', 'true');
+                }
+            }, 1000);
+        });
+
+        // ===== GLOBAL EXPORTS =====
+        window.FestivalApp = {
+            navigateTo,
+            showNotification,
+            loadPublicResults,
+            loadAdminResults
+        };
+    </script>
 </body>
 </html>
-
