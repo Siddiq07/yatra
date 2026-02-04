@@ -2,1145 +2,998 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Festival Results Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ziyarah App</title>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <style>
-        /* ===== SIMPLE CSS ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #2563eb;
+            --dark: #0f172a;
+            --bg: #f8fafc;
+            --input-bg: #f1f5f9;
+            --border: #e2e8f0;
+            --green: #22c55e;
+            --red: #ef4444;
+            --text-sub: #64748b;
         }
-        
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background: #f0f2f5;
-            color: #333;
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg); margin: 0; padding-bottom: 120px; color: var(--dark); font-size: 13px; }
+
+        /* HEADER */
+        .header { background: var(--dark); color: white; padding: 15px 20px; position: sticky; top: 0; z-index: 50; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 25px -10px rgba(15, 23, 42, 0.5); }
+        .clock-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .time { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+        .gear { font-size: 1.2rem; opacity: 0.7; cursor: pointer; padding: 5px; }
+
+        .badges { display: flex; gap: 8px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; display: none; align-items: center; letter-spacing: 0.5px; }
+        .badge.gps { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .badge.late { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); animation: pulse 2s infinite; }
+        .badge.day { display: flex; background: #3b82f6; color: white; border: none; }
+
+        .status-card { background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 16px; text-align: center; margin-top: 5px; }
+        .status-txt { font-weight: 700; font-size: 0.95rem; color: #f1f5f9; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status-highlight { color: #4ade80; }
+
+        /* TIMELINE - ADJUSTED FOR LEFT SIDE TEXT */
+        .timeline { padding: 30px 15px; max-width: 600px; margin: 0 auto; }
+        .node { position: relative; padding-left: 55px; padding-bottom: 35px; } /* Increased padding for text space */
+
+        /* LINE & DOT */
+        .line {
+            position: absolute; left: 22px; top: 28px; bottom: -28px; width: 4px;
+            background: #e2e8f0; z-index: 0; border-radius: 2px;
+            display: flex; align-items: center; justify-content: center;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .node:last-child .line { display: none; }
+
+        .dot {
+            position: absolute; left: 14px; top: 22px; width: 20px; height: 20px;
+            border-radius: 50%; background: white; border: 4px solid #cbd5e1; z-index: 2;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .hidden {
-            display: none !important;
+
+        /* ACTIVE & PASSED */
+        .active .dot { background: var(--green); border-color: #dcfce7; transform: scale(1.2); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.15); }
+        .active .line { background: var(--green); }
+        .passed .dot { background: #cbd5e1; border-color: #e2e8f0; }
+        .passed .line { background: #cbd5e1; }
+        .passed .card { opacity: 0.6; filter: grayscale(1); }
+
+        /* TRAFFIC ANIMATION */
+        .line.moving {
+            background: repeating-linear-gradient(to bottom, #3b82f6 0, #3b82f6 8px, #eff6ff 8px, #eff6ff 16px);
+            background-size: 100% 200%;
+            animation: trafficFlow 1s linear infinite; width: 4px; border: none;
         }
-        
-        /* Header */
-        .header {
-            background: #2c3e50;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .logo h1 {
-            font-size: 24px;
-        }
-        
-        .nav {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .nav a {
-            color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-        }
-        
-        .nav a:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .nav a.active {
-            background: #3498db;
-        }
-        
-        /* Buttons */
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-        
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .btn-warning {
-            background: #f39c12;
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: #95a5a6;
-            color: white;
-        }
-        
-        /* Forms */
-        .form-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        /* Tables */
-        .table-container {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .data-table th {
-            background: #2c3e50;
-            color: white;
-            padding: 10px;
-            text-align: left;
-        }
-        
-        .data-table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .data-table tr:hover {
-            background: #f5f5f5;
-        }
-        
-        /* Cards */
-        .card {
-            background: white;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        /* Grid */
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -10px;
-        }
-        
-        .col {
-            flex: 1;
-            padding: 0 10px;
-            min-width: 250px;
-        }
-        
-        /* Alerts */
-        .alert {
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* Search & Filters */
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .search-box input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .filters select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            min-width: 150px;
-        }
-        
-        /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        /* Footer */
-        .footer {
+        @keyframes trafficFlow { 0% { background-position: 0 0; } 100% { background-position: 0 32px; } }
+
+        /* TRAVEL TEXT - MOVED TO LEFT GUTTER */
+        .travel-tag {
+            position: absolute;
+            left: -50px; /* Pushed to the left empty space */
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            width: 80px;
             text-align: center;
-            padding: 20px;
-            margin-top: 30px;
-            color: #7f8c8d;
-            border-top: 1px solid #ddd;
+            font-size: 0.6rem; font-weight: 800; color: #94a3b8;
+            white-space: nowrap; z-index: 10; letter-spacing: 0.5px;
         }
-        
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .nav {
-                flex-wrap: wrap;
-            }
-            
-            .filters {
-                flex-direction: column;
-            }
-            
-            .filters select {
-                width: 100%;
-            }
-        }
+        .line.moving .travel-tag { color: #3b82f6; }
+
+        /* Day Divider */
+        .day-divider { display: flex; align-items: center; justify-content: center; margin: 30px 0; color: #3b82f6; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
+        .day-divider::before, .day-divider::after { content: ''; height: 1px; background: #cbd5e1; flex: 1; margin: 0 15px; }
+        .day-pill { background: #e0f2fe; padding: 6px 14px; border-radius: 20px; box-shadow: 0 2px 5px rgba(59, 130, 246, 0.1); }
+
+        /* CARDS */
+        .card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid white; transition: 0.2s; }
+        .active .card { border-color: var(--green); box-shadow: 0 10px 30px rgba(34, 197, 94, 0.1); transform: scale(1.02); }
+
+        .card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .title { font-size: 1.05rem; font-weight: 800; color: var(--dark); margin: 0; line-height: 1.2; }
+        .sub { font-size: 0.8rem; color: #64748b; font-weight: 600; margin-top: 3px; }
+
+        .actions { display: flex; gap: 6px; }
+        .btn-icon { padding: 6px 12px; border-radius: 8px; font-size: 0.65rem; font-weight: 700; background: #f1f5f9; color: #64748b; border: 1px solid var(--border); display: inline-flex; align-items: center; gap: 4px; text-decoration: none; cursor: pointer; transition: 0.2s; }
+        .btn-icon.map { color: var(--primary); background: #eff6ff; border-color: #dbeafe; }
+
+        /* CENTERED STAY DURATION */
+        .stay-row { display: flex; justify-content: center; margin-top: 5px; margin-bottom: 10px; }
+        .stay-tag { font-size: 0.7rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; background: transparent; }
+
+        /* Time Grid */
+        .time-grid { display: flex; justify-content: space-between; margin-top: 5px; border-top: 1px solid #f8fafc; padding-top: 12px; }
+        .t-lbl { font-size: 0.65rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 3px; letter-spacing: 0.5px; }
+        .t-val { font-size: 1rem; font-weight: 700; color: var(--dark); font-variant-numeric: tabular-nums; }
+        .t-val.late { color: var(--red); }
+        .t-old { font-size: 0.75rem; text-decoration: line-through; color: #cbd5e1; margin-right: 5px; }
+
+        .event-pill { background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.05); }
+        .ev-icon { font-size: 1.6rem; }
+        .ev-main { font-weight: 800; color: #9d174d; font-size: 0.95rem; }
+        .ev-sub { font-size: 0.75rem; color: #be185d; font-weight: 600; margin-top: 2px; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .tag { background: #f0fdf4; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; border: 1px solid #dcfce7; }
+        .hist-box { font-size: 0.85rem; color: #475569; background: #fff7ed; padding: 12px; border-radius: 10px; margin-top: 10px; border: 1px solid #ffedd5; display: none; line-height: 1.5; }
+
+        /* HELP DOCK */
+        .dock-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .dock-btn { background: #0f172a; color: white; padding: 12px 24px; border-radius: 30px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.4); cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; border: 2px solid rgba(255,255,255,0.1); }
+        .dock-menu { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; padding: 8px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 5px; width: 220px; opacity: 0; pointer-events: none; transform: translateY(20px) scale(0.9); transition: all 0.2s ease; position: absolute; bottom: 70px; }
+        .dock-container.open .dock-menu { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .dock-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 14px; cursor: pointer; background: transparent; color: var(--dark); font-weight: 700; font-size: 0.9rem; }
+        .dock-item:active { background: #f1f5f9; }
+
+        /* LOGIN */
+        .login-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000; backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+        .login-card { background: white; width: 90%; max-width: 320px; border-radius: 24px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; }
+        .login-title { font-size: 1.2rem; font-weight: 800; color: var(--dark); margin-bottom: 5px; }
+        .login-sub { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 20px; }
+        .login-btn { width: 100%; padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px; font-size: 0.95rem; }
+        .btn-go { background: var(--primary); color: white; }
+        .btn-cancel { background: transparent; color: var(--text-sub); margin-top: 5px; }
+
+        /* ADMIN */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: flex-end; backdrop-filter: blur(3px); }
+        .modal-body { background: white; width: 100%; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 25px; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .inp { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.95rem; color: var(--dark); background: var(--input-bg); outline: none; margin-bottom: 10px; font-weight: 600; }
+        .lbl { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-gps { background: var(--green); color: white; margin-bottom: 20px; }
+        .gps-on { background: #15803d; animation: pulse 1.5s infinite; }
+        .row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .col { flex: 1; }
+        .tabs { display: flex; background: var(--input-bg); padding: 5px; border-radius: 12px; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 10px; text-align: center; font-size: 0.85rem; font-weight: 700; border-radius: 10px; color: #64748b; cursor: pointer; }
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .adm-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .adm-text { font-size: 0.9rem; color: #334155; font-weight: 700; }
+        .adm-sub { font-size: 0.75rem; color: #94a3b8; font-weight: 500; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>🏆 Festival Results</h1>
-                </div>
-                <nav class="nav">
-                    <a href="#" data-page="home" class="active">Home</a>
-                    <a href="#" data-page="results">View Results</a>
-                    <a href="#" data-page="admin">Admin</a>
-                    <button id="logoutBtn" class="btn btn-danger hidden">Logout</button>
-                </nav>
-            </div>
-        </header>
 
-        <!-- Home Page -->
-        <div id="homePage" class="page">
-            <div class="card">
-                <h2>Welcome to Festival Results Portal</h2>
-                <p class="mb-15">Manage and view festival competition results in real-time.</p>
-                <div>
-                    <button class="btn btn-primary" data-page="results">View Results</button>
-                    <button class="btn btn-secondary" data-page="admin">Admin Login</button>
-                </div>
-            </div>
-            
-            <div class="row mt-20">
-                <div class="col">
-                    <div class="card">
-                        <h3>📊 Live Results</h3>
-                        <p>Real-time updates of competition results</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <h3>🔍 Easy Search</h3>
-                        <p>Find results by name or event</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <h3>🏆 Leaderboard</h3>
-                        <p>Track overall rankings</p>
-                    </div>
-                </div>
-            </div>
+<div class="header">
+    <div class="clock-row">
+        <div id="live-clock" class="time">--:--</div>
+        <div class="badges">
+            <div id="badge-gps" class="badge gps">📡 GPS</div>
+            <div id="badge-late" class="badge late">⚠️ LATE</div>
+            <div id="badge-day" class="badge day">DAY 1</div>
         </div>
-
-        <!-- Results Page -->
-        <div id="resultsPage" class="page hidden">
-            <div class="card">
-                <h2>📋 Published Results</h2>
-                
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search by name, college, or event...">
-                    <button id="searchBtn" class="btn btn-primary">Search</button>
-                </div>
-                
-                <div class="filters">
-                    <select id="filterCategory">
-                        <option value="">All Categories</option>
-                        <option value="Sports">Sports</option>
-                        <option value="Cultural">Cultural</option>
-                        <option value="Academic">Academic</option>
-                        <option value="Arts">Arts</option>
-                    </select>
-                    <select id="sortResults">
-                        <option value="position">Sort by Position</option>
-                        <option value="points">Sort by Points</option>
-                        <option value="name">Sort by Name</option>
-                    </select>
-                </div>
-                
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Position</th>
-                                <th>Participant</th>
-                                <th>Event</th>
-                                <th>Category</th>
-                                <th>College</th>
-                                <th>Points</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsTableBody">
-                            <!-- Results will load here -->
-                        </tbody>
-                    </table>
-                    <div id="noResults" class="hidden" style="text-align: center; padding: 20px;">
-                        <p>No results found</p>
-                    </div>
-                </div>
-                
-                <h3 class="mt-20">🏆 Leaderboard</h3>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Participant</th>
-                                <th>College</th>
-                                <th>Gold</th>
-                                <th>Silver</th>
-                                <th>Bronze</th>
-                                <th>Total Points</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardBody">
-                            <!-- Leaderboard will load here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Page -->
-        <div id="adminPage" class="page hidden">
-            <!-- Login Form -->
-            <div id="loginForm" class="form-container">
-                <h2 style="text-align: center; margin-bottom: 20px;">🔐 Admin Login</h2>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="adminEmail" class="form-control" placeholder="admin@festival.com">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="adminPassword" class="form-control" placeholder="admin123">
-                </div>
-                <div id="loginError" class="alert alert-error hidden"></div>
-                <button id="loginBtn" class="btn btn-primary" style="width: 100%;">Login</button>
-            </div>
-            
-            <!-- Admin Dashboard -->
-            <div id="adminDashboard" class="hidden">
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h2>⚙️ Admin Dashboard</h2>
-                        <button id="addResultBtn" class="btn btn-primary">➕ Add Result</button>
-                    </div>
-                    
-                    <div class="search-box">
-                        <input type="text" id="adminSearch" placeholder="Search results...">
-                        <select id="filterStatus">
-                            <option value="">All Status</option>
-                            <option value="published">Published</option>
-                            <option value="draft">Draft</option>
-                        </select>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Event</th>
-                                    <th>Participant</th>
-                                    <th>College</th>
-                                    <th>Position</th>
-                                    <th>Points</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminResultsTable">
-                                <!-- Admin results will load here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Stats -->
-                    <div class="row mt-20">
-                        <div class="col">
-                            <div class="card">
-                                <h3>👥 Participants</h3>
-                                <p id="totalParticipants" style="font-size: 24px; font-weight: bold;">0</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card">
-                                <h3>🎯 Events</h3>
-                                <p id="totalEvents" style="font-size: 24px; font-weight: bold;">0</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card">
-                                <h3>⭐ Points</h3>
-                                <p id="totalPoints" style="font-size: 24px; font-weight: bold;">0</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <p>© 2024 Festival Results Management System</p>
-        </footer>
+        <div class="gear" onclick="checkLogin()">⚙️</div>
     </div>
-
-    <!-- Add/Edit Result Modal -->
-    <div id="resultModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px;">📝 <span id="modalTitle">Add Result</span></h3>
-            <form id="resultForm">
-                <input type="hidden" id="resultId">
-                
-                <div class="form-group">
-                    <label>Event Name *</label>
-                    <input type="text" id="eventName" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Category *</label>
-                    <select id="eventCategory" class="form-control" required>
-                        <option value="">Select Category</option>
-                        <option value="Sports">Sports</option>
-                        <option value="Cultural">Cultural</option>
-                        <option value="Academic">Academic</option>
-                        <option value="Arts">Arts</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Participant Name *</label>
-                    <input type="text" id="participantName" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Participant Email</label>
-                    <input type="email" id="participantEmail" class="form-control">
-                </div>
-                
-                <div class="form-group">
-                    <label>College/Team *</label>
-                    <input type="text" id="college" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Position *</label>
-                    <select id="position" class="form-control" required>
-                        <option value="1">1st (Gold)</option>
-                        <option value="2">2nd (Silver)</option>
-                        <option value="3">3rd (Bronze)</option>
-                        <option value="4">4th</option>
-                        <option value="5">5th</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Points *</label>
-                    <input type="number" id="points" class="form-control" value="10" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Publish Immediately</label>
-                    <input type="checkbox" id="isPublished">
-                </div>
-                
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save</button>
-                    <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
-                </div>
-            </form>
-        </div>
+    <div class="status-card">
+        <div id="live-status" class="status-txt">Syncing...</div>
     </div>
+</div>
 
-    <script>
-        // ===== APP STATE =====
-        let currentUser = null;
-        let allResults = [];
-        
-        // ===== DOM ELEMENTS =====
-        const pages = {
-            home: document.getElementById('homePage'),
-            results: document.getElementById('resultsPage'),
-            admin: document.getElementById('adminPage')
-        };
-        
-        const modals = {
-            result: document.getElementById('resultModal')
-        };
-        
-        // ===== NAVIGATION =====
-        document.querySelectorAll('[data-page]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const page = e.target.closest('[data-page]').dataset.page;
-                showPage(page);
-            });
-        });
-        
-        function showPage(page) {
-            // Hide all pages
-            Object.values(pages).forEach(p => p.classList.add('hidden'));
-            
-            // Show selected page
-            pages[page].classList.remove('hidden');
-            
-            // Update active nav link
-            document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
-            document.querySelector(`[data-page="${page}"]`).classList.add('active');
-            
-            // Show/hide logout button
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (page === 'admin' && currentUser) {
-                logoutBtn.classList.remove('hidden');
-            } else {
-                logoutBtn.classList.add('hidden');
-            }
-            
-            // Load page data
-            if (page === 'results') {
-                loadPublicResults();
-            } else if (page === 'admin' && currentUser) {
-                loadAdminResults();
-                loadStats();
-            }
+<div id="timeline" class="timeline"></div>
+
+<div class="dock-container" id="dock">
+    <div class="dock-menu">
+        <div class="dock-item" onclick="sendWA('I need Food 🍔')"><span class="dock-emoji">🍔</span> Request Food</div>
+        <div class="dock-item" onclick="sendWA('I need Water 💧')"><span class="dock-emoji">💧</span> Request Water</div>
+        <div class="dock-item" onclick="sendWA('I need Assistance 🆘')"><span class="dock-emoji">🆘</span> Emergency</div>
+    </div>
+    <div class="dock-btn" onclick="toggleDock()">
+        <span class="dock-icon">🎧</span> Help & Support
+    </div>
+</div>
+
+<div id="login-modal" class="login-overlay">
+    <div class="login-card">
+        <div style="font-size:3rem; margin-bottom:10px;">🔒</div>
+        <div class="login-title">Admin Access</div>
+        <div class="login-sub">Enter password to manage trip</div>
+        <input type="password" id="login-pass" class="inp" placeholder="Password" style="text-align:center;">
+        <button onclick="attemptLogin()" class="login-btn btn-go">Login</button>
+        <button onclick="closeLogin()" class="login-btn btn-cancel">Cancel</button>
+    </div>
+</div>
+
+<div id="admin-modal" class="modal">
+    <div class="modal-body">
+        <div class="clock-row">
+            <h3 style="margin:0;">Trip Controls</h3>
+            <span onclick="closeAdmin()" style="font-size:2rem; color:#94a3b8; cursor:pointer;">×</span>
+        </div>
+
+        <button id="btn-gps" onclick="toggleGPS()" class="btn btn-gps">📡 Start GPS Broadcast</button>
+
+        <div style="background:#f0f9ff; padding:15px; border-radius:12px; border:1px solid #bae6fd; margin-bottom:15px;">
+            <label class="lbl" style="color:#0284c7;">📅 CURRENT ACTIVE DAY</label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button onclick="changeDay(-1)" class="btn" style="width:auto; padding:8px 15px; background:white; color:#0284c7;">◀️</button>
+                <span id="current-day-label" style="font-weight:800; font-size:1.2rem; color:#0369a1;">DAY 1</span>
+                <button onclick="changeDay(1)" class="btn" style="width:auto; padding:8px 15px; background:white; color:#0284c7;">▶️</button>
+            </div>
+            <input type="date" id="adm-start-date" class="inp" style="margin-top:10px; font-weight:bold; text-align:center;" onchange="setStartDate()">
+        </div>
+
+        <div style="background:#fff1f2; padding:15px; border-radius:12px; border:1px solid #fecdd3; margin-bottom:15px;">
+            <label class="lbl" style="color:#e11d48;">⚠️ REPORT DELAY (MINUTES)</label>
+            <div class="row" style="margin-bottom:0;">
+                <input type="number" id="adm-delay" class="inp" placeholder="0" style="font-weight:bold; background:white; margin-bottom:0;">
+                <button onclick="setDelay()" class="btn" style="background:#e11d48; color:white; width:auto; padding:0 25px;">SET</button>
+            </div>
+            <div style="margin-top:10px;">
+                <label class="lbl" style="color:#be123c;">Apply From Stop:</label>
+                <select id="adm-delay-start" class="inp" style="background:white; padding:10px; margin-bottom:0;"></select>
+            </div>
+        </div>
+
+        <div style="margin-bottom:25px;">
+            <label class="lbl">📢 Manual Override Message</label>
+            <div class="row" style="margin-bottom:0;">
+                <input type="text" id="adm-manual" class="inp" placeholder="e.g. Break" style="margin-bottom:0;">
+                <button onclick="setManual()" class="btn" style="background:#64748b; color:white; width:auto; padding:0 20px;">Upd</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div id="tab-loc" class="tab active" onclick="setType('location')">📍 New Stop</div>
+            <div id="tab-upd" class="tab" onclick="setType('update')">🍔 On-Way Event</div>
+        </div>
+
+        <label class="lbl">Title Name*</label>
+        <input type="text" id="adm-name" class="inp" placeholder="e.g. Mysore Palace">
+
+        <div id="loc-fields">
+            <div class="row">
+                <button onclick="autoFillCoords()" class="btn" style="background:#f1f5f9; color:#475569; padding:10px; font-size:0.8rem;">🔍 Search Coords</button>
+                <button onclick="useCurrentLoc()" class="btn" style="background:#f1f5f9; color:#475569; padding:10px; font-size:0.8rem;">📍 My GPS</button>
+            </div>
+
+            <div style="background:#f0fdf4; padding:10px; border-radius:10px; border:1px solid #bbf7d0; margin-bottom:10px;">
+                <label class="lbl" style="color:#15803d; margin-bottom:5px;">📅 Day Number</label>
+                <input type="number" id="adm-day-num" class="inp" value="1" min="1" style="background:white; font-weight:bold; margin-bottom:0;">
+            </div>
+
+            <div class="row">
+                <div class="col"><label class="lbl">Latitude</label><input type="text" id="adm-lat" class="inp" style="margin-bottom:0;"></div>
+                <div class="col"><label class="lbl">Longitude</label><input type="text" id="adm-lng" class="inp" style="margin-bottom:0;"></div>
+            </div>
+            <div style="margin-top:10px;">
+                <label class="lbl">Sub-Title / Location</label>
+                <input type="text" id="adm-subname" class="inp">
+                <label class="lbl">Map Link</label>
+                <input type="text" id="adm-link" class="inp">
+                <label class="lbl">Activities</label>
+                <input type="text" id="adm-activities" class="inp">
+                <label class="lbl">History</label>
+                <textarea id="adm-history" class="inp" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col"><label class="lbl">Arrival</label><input type="time" id="adm-arrival" class="inp"></div>
+            <div class="col"><label class="lbl">Depart</label><input type="time" id="adm-depart" class="inp"></div>
+        </div>
+<div id="insert-container" style="margin-bottom: 15px;">
+    <label class="lbl" style="color:#f59e0b;">Insert After (Optional)</label>
+    <select id="adm-insert-after" class="inp" style="background:#fffbeb; border-color:#fcd34d;">
+        <option value="-1">-- Add to End of List --</option>
+    </select>
+</div>
+        <button id="adm-submit-btn" onclick="addItem()" class="btn btn-main">Save to Timeline</button>
+
+        <div class="row" style="margin-top:20px;">
+            <button onclick="logout()" class="btn" style="background:#cbd5e1; color:#334155; font-size:0.85rem;">🔒 Log Out</button>
+            <button onclick="resetTrip()" class="btn" style="background:#fee2e2; color:var(--red); font-size:0.85rem;">Delete All</button>
+        </div>
+
+        <div id="admin-list" style="margin-top:25px;"></div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 1. FIREBASE CONFIGURATION
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyB1K7kjANYtRO9bGH64Nq9BwksjjNQgaow",
+        authDomain: "travel-ddbdf.firebaseapp.com",
+        databaseURL: "https://travel-ddbdf-default-rtdb.firebaseio.com",
+        projectId: "travel-ddbdf",
+        storageBucket: "travel-ddbdf.firebasestorage.app",
+        messagingSenderId: "1094598079024",
+        appId: "1:1094598079024:web:299ebfb5ae1f620e20f3f5",
+        measurementId: "G-BFT5GT6XVJ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ==========================================
+    // 2. GLOBAL VARIABLES
+    // ==========================================
+    let tripData = {
+        route: [],
+        manualStatus: "",
+        delayMins: 0,
+        delayStartIndex: 0,
+        currentDay: 1,
+        startDate: ""
+    };
+
+    let liveGPS = null;
+    let gpsWatchId = null;
+    let expandedHistory = new Set();
+    let addType = 'location';
+    let editModeIndex = -1;
+
+    // --- Notification State Memory ---
+    let lastKnownDelay = 0;
+    let notifiedArrivals = new Set();
+    let notifiedTravel = new Set();
+    let notifiedDepartureWarning = new Set();
+
+    // ==========================================
+    // 3. MAIN LOOP (Runs every 1 second)
+    // ==========================================
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        runLogicCheck(now);
+    }, 1000);
+
+    // ==========================================
+    // 4. NOTIFICATION BRIDGE (Web -> Android)
+    // ==========================================
+    function sendPhoneNotification(title, body) {
+        if(window.Android && window.Android.showNotification) {
+            window.Android.showNotification(title, body);
+        } else {
+            console.log("🔔 [DEV] Notification:", title, body);
         }
-        
-        // ===== MODAL FUNCTIONS =====
-        function showModal(modal) {
-            modal.classList.add('active');
-        }
-        
-        function hideModal(modal) {
-            modal.classList.remove('active');
-        }
-        
-        document.getElementById('cancelBtn').addEventListener('click', () => {
-            hideModal(modals.result);
-        });
-        
-        // Click outside modal to close
-        modals.result.addEventListener('click', (e) => {
-            if (e.target === modals.result) {
-                hideModal(modals.result);
-            }
-        });
-        
-        // ===== LOCAL STORAGE FUNCTIONS =====
-        // Since we're not using Firebase in this simple version, we'll use localStorage
-        
-        function saveResult(resultData, id = null) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    if (id) {
-                        // Update existing
-                        const index = allResults.findIndex(r => r.id === id);
-                        if (index !== -1) {
-                            allResults[index] = { ...allResults[index], ...resultData };
-                        }
-                    } else {
-                        // Create new
-                        const newId = 'result_' + Date.now();
-                        const newResult = {
-                            id: newId,
-                            ...resultData,
-                            createdAt: Date.now()
-                        };
-                        allResults.push(newResult);
-                        id = newId;
-                    }
-                    
-                    // Save to localStorage
-                    localStorage.setItem('festivalResults', JSON.stringify(allResults));
-                    resolve(id);
-                }, 300);
-            });
-        }
-        
-        function deleteResult(id) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    allResults = allResults.filter(r => r.id !== id);
-                    localStorage.setItem('festivalResults', JSON.stringify(allResults));
-                    resolve();
-                }, 300);
-            });
-        }
-        
-        function loadResultsFromStorage() {
-            const saved = localStorage.getItem('festivalResults');
-            if (saved) {
-                allResults = JSON.parse(saved);
-            } else {
-                // Create demo data
-                allResults = [
-                    {
-                        id: '1',
-                        eventName: '100m Sprint',
-                        eventCategory: 'Sports',
-                        participantName: 'John Smith',
-                        participantEmail: 'john@example.com',
-                        college: 'ABC University',
-                        position: 1,
-                        points: 10,
-                        isPublished: true,
-                        createdAt: Date.now() - 86400000
-                    },
-                    {
-                        id: '2',
-                        eventName: '100m Sprint',
-                        eventCategory: 'Sports',
-                        participantName: 'Emma Wilson',
-                        participantEmail: 'emma@example.com',
-                        college: 'XYZ College',
-                        position: 2,
-                        points: 8,
-                        isPublished: true,
-                        createdAt: Date.now() - 86400000
-                    },
-                    {
-                        id: '3',
-                        eventName: 'Dance Competition',
-                        eventCategory: 'Cultural',
-                        participantName: 'Sarah Johnson',
-                        participantEmail: 'sarah@example.com',
-                        college: 'ABC University',
-                        position: 1,
-                        points: 10,
-                        isPublished: true,
-                        createdAt: Date.now() - 43200000
-                    },
-                    {
-                        id: '4',
-                        eventName: 'Debate Competition',
-                        eventCategory: 'Academic',
-                        participantName: 'Michael Brown',
-                        participantEmail: 'michael@example.com',
-                        college: 'LMN Institute',
-                        position: 1,
-                        points: 10,
-                        isPublished: false,
-                        createdAt: Date.now() - 21600000
-                    }
-                ];
-                localStorage.setItem('festivalResults', JSON.stringify(allResults));
-            }
-        }
-        
-        // ===== PUBLIC RESULTS =====
-        function loadPublicResults() {
-            const tbody = document.getElementById('resultsTableBody');
-            const noResults = document.getElementById('noResults');
-            
-            // Get filters
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const category = document.getElementById('filterCategory').value;
-            const sortBy = document.getElementById('sortResults').value;
-            
-            // Filter results
-            let filtered = allResults.filter(r => r.isPublished === true);
-            
-            if (searchTerm) {
-                filtered = filtered.filter(r => 
-                    r.participantName.toLowerCase().includes(searchTerm) ||
-                    r.college.toLowerCase().includes(searchTerm) ||
-                    r.eventName.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            if (category) {
-                filtered = filtered.filter(r => r.eventCategory === category);
-            }
-            
-            // Sort results
-            if (sortBy === 'position') {
-                filtered.sort((a, b) => a.position - b.position);
-            } else if (sortBy === 'points') {
-                filtered.sort((a, b) => b.points - a.points);
-            } else if (sortBy === 'name') {
-                filtered.sort((a, b) => a.participantName.localeCompare(b.participantName));
-            }
-            
-            // Display results
-            tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                noResults.classList.remove('hidden');
-                return;
-            }
-            
-            noResults.classList.add('hidden');
-            
-            filtered.forEach(result => {
-                const medal = result.position === 1 ? '🥇' : 
-                             result.position === 2 ? '🥈' : 
-                             result.position === 3 ? '🥉' : result.position;
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>${medal}</strong></td>
-                    <td>
-                        <strong>${result.participantName}</strong><br>
-                        <small>${result.participantEmail || ''}</small>
-                    </td>
-                    <td>${result.eventName}</td>
-                    <td>${result.eventCategory}</td>
-                    <td>${result.college}</td>
-                    <td><strong>${result.points}</strong></td>
-                `;
-                tbody.appendChild(row);
-            });
-            
-            // Load leaderboard
-            loadLeaderboard();
-        }
-        
-        function loadLeaderboard() {
-            const tbody = document.getElementById('leaderboardBody');
-            const publishedResults = allResults.filter(r => r.isPublished);
-            const leaderboard = {};
-            
-            publishedResults.forEach(result => {
-                const key = result.participantEmail || result.participantName;
-                if (!leaderboard[key]) {
-                    leaderboard[key] = {
-                        name: result.participantName,
-                        college: result.college,
-                        gold: 0,
-                        silver: 0,
-                        bronze: 0,
-                        totalPoints: 0
-                    };
+    }
+
+    // ==========================================
+    // 5. CORE LOGIC ENGINE
+    // ==========================================
+    function runLogicCheck(now) {
+        const statusBox = document.getElementById('live-status');
+        const badgeGPS = document.getElementById('badge-gps');
+        const badgeLate = document.getElementById('badge-late');
+        const badgeDay = document.getElementById('badge-day');
+
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+
+        // -- Update Badges --
+        badgeGPS.style.display = (liveGPS && (Date.now() - liveGPS.updatedAt < 300000)) ? 'flex' : 'none';
+
+        // -- A. Delay Logic --
+        if(tripData.delayMins > 0) {
+            badgeLate.style.display = 'flex';
+            badgeLate.innerText = `⚠️ +${tripData.delayMins} MIN`;
+
+            if(tripData.delayMins > lastKnownDelay) {
+                let delayPlace = "Current Location";
+                if(tripData.route[tripData.delayStartIndex]) {
+                    delayPlace = tripData.route[tripData.delayStartIndex].name;
                 }
-                
-                const p = leaderboard[key];
-                p.totalPoints += result.points || 0;
-                if (result.position === 1) p.gold++;
-                if (result.position === 2) p.silver++;
-                if (result.position === 3) p.bronze++;
-            });
-            
-            // Convert to array and sort
-            const leaderboardArray = Object.values(leaderboard)
-                .sort((a, b) => b.totalPoints - a.totalPoints);
-            
-            // Display
-            tbody.innerHTML = '';
-            leaderboardArray.forEach((p, index) => {
-                const row = document.createElement('tr');
-                const rank = index === 0 ? '🥇' : 
-                           index === 1 ? '🥈' : 
-                           index === 2 ? '🥉' : index + 1;
-                
-                row.innerHTML = `
-                    <td><strong>${rank}</strong></td>
-                    <td><strong>${p.name}</strong></td>
-                    <td>${p.college}</td>
-                    <td>${p.gold}</td>
-                    <td>${p.silver}</td>
-                    <td>${p.bronze}</td>
-                    <td><strong>${p.totalPoints}</strong></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        // ===== ADMIN FUNCTIONS =====
-        // Login
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const email = document.getElementById('adminEmail').value;
-            const password = document.getElementById('adminPassword').value;
-            const errorDiv = document.getElementById('loginError');
-            
-            if (email === 'admin@festival.com' && password === 'admin123') {
-                currentUser = { email, role: 'admin' };
-                localStorage.setItem('festivalAdmin', 'true');
-                
-                // Show dashboard
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                document.getElementById('logoutBtn').classList.remove('hidden');
-                
-                // Load admin data
-                loadAdminResults();
-                loadStats();
-                
-                showNotification('Login successful!', 'success');
-            } else {
-                errorDiv.textContent = 'Invalid credentials. Use: admin@festival.com / admin123';
-                errorDiv.classList.remove('hidden');
-            }
-        });
-        
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            currentUser = null;
-            localStorage.removeItem('festivalAdmin');
-            
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('adminDashboard').classList.add('hidden');
-            document.getElementById('logoutBtn').classList.add('hidden');
-            
-            showNotification('Logged out successfully', 'info');
-            showPage('home');
-        });
-        
-        // Check if already logged in
-        if (localStorage.getItem('festivalAdmin') === 'true') {
-            currentUser = { email: 'admin@festival.com', role: 'admin' };
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('adminDashboard').classList.remove('hidden');
-            document.getElementById('logoutBtn').classList.remove('hidden');
-        }
-        
-        // Load Admin Results
-        function loadAdminResults() {
-            const tbody = document.getElementById('adminResultsTable');
-            const searchTerm = document.getElementById('adminSearch').value.toLowerCase();
-            const statusFilter = document.getElementById('filterStatus').value;
-            
-            let filtered = [...allResults];
-            
-            if (searchTerm) {
-                filtered = filtered.filter(r => 
-                    r.participantName.toLowerCase().includes(searchTerm) ||
-                    r.eventName.toLowerCase().includes(searchTerm) ||
-                    r.college.toLowerCase().includes(searchTerm)
+                sendPhoneNotification(
+                    "⚠️ Delay Update",
+                    `Trip delayed by ${tripData.delayMins} mins at ${delayPlace}`
                 );
+                lastKnownDelay = tripData.delayMins;
             }
-            
-            if (statusFilter === 'published') {
-                filtered = filtered.filter(r => r.isPublished === true);
-            } else if (statusFilter === 'draft') {
-                filtered = filtered.filter(r => !r.isPublished);
-            }
-            
-            // Sort by date (newest first)
-            filtered.sort((a, b) => b.createdAt - a.createdAt);
-            
-            // Display
-            tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 20px;">
-                            No results found
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            filtered.forEach(result => {
-                const status = result.isPublished ? 
-                    '<span class="badge badge-success">Published</span>' : 
-                    '<span class="badge badge-warning">Draft</span>';
-                
-                const medal = result.position === 1 ? '🥇' : 
-                             result.position === 2 ? '🥈' : 
-                             result.position === 3 ? '🥉' : result.position;
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>
-                        <strong>${result.eventName}</strong><br>
-                        <small>${result.eventCategory}</small>
-                    </td>
-                    <td>
-                        <strong>${result.participantName}</strong><br>
-                        <small>${result.participantEmail || ''}</small>
-                    </td>
-                    <td>${result.college}</td>
-                    <td>${medal}</td>
-                    <td><strong>${result.points}</strong></td>
-                    <td>${status}</td>
-                    <td>
-                        <button onclick="editResult('${result.id}')" class="btn btn-secondary" style="padding: 5px 10px; margin: 2px;">✏️</button>
-                        <button onclick="togglePublish('${result.id}', ${!result.isPublished})" class="btn ${result.isPublished ? 'btn-warning' : 'btn-success'}" style="padding: 5px 10px; margin: 2px;">
-                            ${result.isPublished ? '👁️' : '👁️'}
-                        </button>
-                        <button onclick="deleteResultAction('${result.id}')" class="btn btn-danger" style="padding: 5px 10px; margin: 2px;">🗑️</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
+        } else {
+            badgeLate.style.display = 'none';
+            lastKnownDelay = 0;
         }
-        
-        // Admin Actions (global functions)
-        window.editResult = function(id) {
-            const result = allResults.find(r => r.id === id);
-            if (!result) return;
-            
-            document.getElementById('modalTitle').textContent = 'Edit Result';
-            document.getElementById('resultId').value = id;
-            document.getElementById('eventName').value = result.eventName || '';
-            document.getElementById('eventCategory').value = result.eventCategory || '';
-            document.getElementById('participantName').value = result.participantName || '';
-            document.getElementById('participantEmail').value = result.participantEmail || '';
-            document.getElementById('college').value = result.college || '';
-            document.getElementById('position').value = result.position || 1;
-            document.getElementById('points').value = result.points || 10;
-            document.getElementById('isPublished').checked = result.isPublished || false;
-            
-            showModal(modals.result);
-        };
-        
-        window.togglePublish = function(id, publish) {
-            const result = allResults.find(r => r.id === id);
-            if (!result) return;
-            
-            result.isPublished = publish;
-            result.publishedAt = publish ? Date.now() : null;
-            
-            localStorage.setItem('festivalResults', JSON.stringify(allResults));
-            loadAdminResults();
-            loadStats();
-            
-            // Also reload public results if on that page
-            if (document.getElementById('resultsPage').classList.contains('hidden') === false) {
-                loadPublicResults();
-            }
-            
-            showNotification(
-                publish ? 'Result published!' : 'Result unpublished!',
-                'success'
-            );
-        };
-        
-        window.deleteResultAction = function(id) {
-            if (confirm('Delete this result?')) {
-                deleteResult(id)
-                    .then(() => {
-                        loadAdminResults();
-                        loadStats();
-                        showNotification('Result deleted!', 'success');
-                    });
-            }
-        };
-        
-        // Add Result Button
-        document.getElementById('addResultBtn').addEventListener('click', () => {
-            document.getElementById('modalTitle').textContent = 'Add Result';
-            document.getElementById('resultForm').reset();
-            document.getElementById('resultId').value = '';
-            document.getElementById('isPublished').checked = false;
-            showModal(modals.result);
-        });
-        
-        // Save Result Form
-        document.getElementById('resultForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const id = document.getElementById('resultId').value;
-            const resultData = {
-                eventName: document.getElementById('eventName').value,
-                eventCategory: document.getElementById('eventCategory').value,
-                participantName: document.getElementById('participantName').value,
-                participantEmail: document.getElementById('participantEmail').value,
-                college: document.getElementById('college').value,
-                position: parseInt(document.getElementById('position').value),
-                points: parseInt(document.getElementById('points').value),
-                isPublished: document.getElementById('isPublished').checked
-            };
-            
-            saveResult(resultData, id || null)
-                .then(() => {
-                    hideModal(modals.result);
-                    showNotification(
-                        id ? 'Result updated!' : 'Result added!',
-                        'success'
-                    );
-                    loadAdminResults();
-                    loadStats();
-                    
-                    // Reload public results if published
-                    if (resultData.isPublished && document.getElementById('resultsPage').classList.contains('hidden') === false) {
-                        loadPublicResults();
+
+        badgeDay.style.display = 'flex';
+        badgeDay.innerText = `DAY ${tripData.currentDay || 1}`;
+
+        // -- Manual Override --
+        if(tripData.manualStatus && tripData.manualStatus.trim() !== "") {
+            statusBox.innerHTML = `📢 ${tripData.manualStatus}`;
+            calculateTimelineState(now);
+            return;
+        }
+
+// -- B. HYBRID LOGIC (GPS OR TIME) --
+        let isAtAnyStop = false;
+
+        tripData.route.forEach((stop, i) => {
+            // Only check current day stops
+            if((stop.day || 1) == (tripData.currentDay || 1) && stop.type !== 'update') {
+
+                // 1. Calculate Real Times (Schedule + Delay)
+                let currentDelay = (i >= tripData.delayStartIndex) ? tripData.delayMins : 0;
+                let realArrMins = timeToMins(stop.arrival) + currentDelay;
+                let realDepMins = timeToMins(stop.depart) + currentDelay;
+
+                // 2. Check Conditions
+                // Condition A: GPS is close (< 500m)
+                let gpsCondition = (liveGPS && stop.lat && stop.lng && distanceMeters(liveGPS.lat, liveGPS.lng, stop.lat, stop.lng) < 500);
+
+                // Condition B: Time matches (We are within the arrival-departure window)
+                let timeCondition = (nowMins >= realArrMins && nowMins <= realDepMins);
+
+                // 🔥 TRIGGER: ARRIVED (If GPS *OR* Time says we are here)
+                if (gpsCondition || timeCondition) {
+                    statusBox.innerHTML = `🟢 ARRIVED AT<br><span class="status-highlight">${stop.name}</span>`;
+                    isAtAnyStop = true;
+
+                    if(!notifiedArrivals.has(i)) {
+                        let realDepStr = minsToTime(realDepMins);
+                        sendPhoneNotification(
+                            `🟢 Arrived: ${stop.name}`,
+                            `Departure scheduled at ${realDepStr}`
+                        );
+                        notifiedArrivals.add(i);
                     }
-                });
-        });
-        
-        // ===== STATISTICS =====
-        function loadStats() {
-            const published = allResults.filter(r => r.isPublished).length;
-            const totalPoints = allResults.reduce((sum, r) => sum + (r.points || 0), 0);
-            const uniqueParticipants = new Set(allResults.map(r => r.participantEmail || r.participantName)).size;
-            const uniqueEvents = new Set(allResults.map(r => r.eventName)).size;
-            
-            document.getElementById('totalParticipants').textContent = uniqueParticipants;
-            document.getElementById('totalEvents').textContent = uniqueEvents;
-            document.getElementById('totalPoints').textContent = totalPoints;
-        }
-        
-        // ===== EVENT LISTENERS =====
-        // Public results search
-        document.getElementById('searchBtn').addEventListener('click', loadPublicResults);
-        document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') loadPublicResults();
-        });
-        document.getElementById('filterCategory').addEventListener('change', loadPublicResults);
-        document.getElementById('sortResults').addEventListener('change', loadPublicResults);
-        
-        // Admin search
-        document.getElementById('adminSearch').addEventListener('input', loadAdminResults);
-        document.getElementById('filterStatus').addEventListener('change', loadAdminResults);
-        
-        // ===== NOTIFICATION SYSTEM =====
-        function showNotification(message, type = 'info') {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type === 'error' ? 'error' : 'success'}`;
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.zIndex = '1000';
-            notification.style.maxWidth = '300px';
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-        
-        // ===== INITIALIZE APP =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Load data from localStorage
-            loadResultsFromStorage();
-            
-            // Show welcome message on first visit
-            if (!localStorage.getItem('festivalFirstVisit')) {
-                setTimeout(() => {
-                    showNotification('Welcome! Use admin@festival.com / admin123 to login', 'info');
-                    localStorage.setItem('festivalFirstVisit', 'true');
-                }, 1000);
+
+                    renderTimeline(i, -1);
+                }
             }
         });
-    </script>
+
+        // -- NEXT STOP LOGIC (Only runs if we are NOT currently at a stop) --
+        if(!isAtAnyStop) {
+            // Calculate where we should be on the timeline
+            let targetIdx = calculateTimelineState(now, true);
+
+            if(targetIdx > -1 && tripData.route[targetIdx]) {
+                let s = tripData.route[targetIdx];
+
+                // If we have GPS, show real distance
+                if(liveGPS && s.lat) {
+                    let d = distanceMeters(liveGPS.lat, liveGPS.lng, s.lat, s.lng);
+                    let km = (d/1000).toFixed(1);
+                    statusBox.innerHTML = `🚗 ${km} km TO<br><span style="color:#60a5fa">${s.name}</span>`;
+                } else {
+                    // If no GPS, just show generic text
+                    statusBox.innerHTML = `🚗 ON WAY TO<br><span style="color:#60a5fa">${s.name}</span>`;
+                }
+
+                // 🔥 NOTIFICATION: NEXT STOP
+                if(!notifiedTravel.has(targetIdx)) {
+                    let currentDelay = (targetIdx >= tripData.delayStartIndex) ? tripData.delayMins : 0;
+                    let realEta = minsToTime(timeToMins(s.arrival) + currentDelay);
+
+                    let durationText = s.travelInfo || "Unknown";
+                    if(durationText.includes("MIN") || !isNaN(durationText)) durationText = formatDuration(durationText);
+
+                    sendPhoneNotification(
+                        `🚗 Next Stop: ${s.name}`,
+                        `ETA: ${realEta} | Duration: ${durationText}`
+                    );
+                    notifiedTravel.add(targetIdx);
+                }
+
+                // FORCE ANIMATION (Blue Line)
+                renderTimeline(-1, targetIdx);
+            } else {
+                // If no target found, just default update
+                calculateTimelineState(now);
+            }
+        }
+        // -- C. 5-MINUTE DEPARTURE WARNING --
+        tripData.route.forEach((stop, i) => {
+            if((stop.day || 1) == (tripData.currentDay || 1)) {
+
+                let currentDelay = (i >= tripData.delayStartIndex) ? tripData.delayMins : 0;
+                let departMins = timeToMins(stop.depart) + currentDelay;
+                let diff = departMins - nowMins;
+
+                if (diff > 0 && diff <= 5 && !notifiedDepartureWarning.has(i)) {
+                    sendPhoneNotification(
+                        `⚠️ Departure Alert`,
+                        `Leaving ${stop.name} in ${diff} minutes! (${minsToTime(departMins)})`
+                    );
+                    notifiedDepartureWarning.add(i);
+                }
+            }
+        });
+    }
+
+    // ==========================================
+    // 6. TIMELINE CALCULATIONS
+    // ==========================================
+    function calculateTimelineState(now, returnIndex = false) {
+        const nowMins = now.getHours() * 60 + now.getMinutes();
+        let statusText = "WAITING...";
+        let activeIndex = -1;
+        let travelIndex = -1;
+        const delayAmount = parseInt(tripData.delayMins || 0);
+        const delayStartIdx = parseInt(tripData.delayStartIndex || 0);
+        const curDay = tripData.currentDay || 1;
+
+        tripData.route.forEach((stop, i) => {
+            const stopDay = stop.day || 1;
+            if(stopDay != curDay) return;
+
+            const baseArr = timeToMins(stop.arrival);
+            const baseDep = timeToMins(stop.depart);
+            const currentDelay = (i >= delayStartIdx) ? delayAmount : 0;
+            const adjArr = baseArr + currentDelay;
+            const adjDep = baseDep + currentDelay;
+
+            if (nowMins >= adjArr && nowMins <= adjDep) {
+                statusText = `🟢 AT LOCATION:<br><span class="status-highlight">${stop.name}</span>`;
+                activeIndex = i;
+            }
+
+            if (i > 0 && activeIndex === -1 && travelIndex === -1) {
+                const prevStop = tripData.route[i-1];
+                if((prevStop.day || 1) <= curDay) {
+                    const prevDelay = (i-1 >= delayStartIdx) ? delayAmount : 0;
+                    const prevDep = timeToMins(prevStop.depart) + prevDelay;
+                    if (nowMins > prevDep && nowMins < adjArr) {
+                        statusText = `🚗 ON THE WAY TO:<br><span style="color:#60a5fa">${stop.name}</span>`;
+                        travelIndex = i;
+                    }
+                }
+            }
+        });
+
+        if(returnIndex) return (activeIndex > -1 ? activeIndex : travelIndex);
+
+        if(!tripData.manualStatus && !liveGPS) {
+            document.getElementById('live-status').innerHTML = statusText;
+        }
+
+        renderTimeline(activeIndex, travelIndex);
+    }
+
+    // ==========================================
+    // 7. RENDER TIMELINE (Visuals)
+    // ==========================================
+    function renderTimeline(activeIdx, travelIdx) {
+        const container = document.getElementById('timeline');
+        container.innerHTML = '';
+
+        const delay = parseInt(tripData.delayMins || 0);
+        const startIdx = parseInt(tripData.delayStartIndex || 0);
+        const curDay = tripData.currentDay || 1;
+        let prevStopDay = 0;
+
+        tripData.route.forEach((stop, i) => {
+            const stopDay = stop.day || 1;
+            let isPassed = false;
+            let isActive = false;
+
+            if (stopDay < curDay) isPassed = true;
+            else if (stopDay > curDay) isPassed = false;
+            else {
+                isActive = (i === activeIdx);
+                isPassed = (i < activeIdx) || (travelIdx > i);
+                if(activeIdx === -1 && travelIdx === -1) {
+                    const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+                    const dep = timeToMins(stop.depart) + (i >= startIdx ? delay : 0);
+                    if(nowMins > dep) isPassed = true;
+                }
+            }
+
+            const status = isActive ? 'active' : (isPassed ? 'passed' : '');
+
+            // Day Divider
+            if(stopDay > prevStopDay && prevStopDay !== 0) {
+                let dateLabel = `DAY ${stopDay}`;
+                if(tripData.startDate) {
+                    let d = new Date(tripData.startDate);
+                    d.setDate(d.getDate() + (stopDay - 1));
+                    dateLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                }
+                container.innerHTML += `<div class="day-divider"><span class="day-pill">📅 ${dateLabel}</span></div>`;
+            }
+            prevStopDay = stopDay;
+
+            // 🔥 ANIMATED LINE LOGIC 🔥
+            // If traveling TO stop i+1, animate the line originating from stop i (going down)
+            let lineClass = "line";
+            if (travelIdx === i + 1 && stopDay == curDay) lineClass += " moving";
+
+            let nextStop = tripData.route[i+1];
+
+            // Travel Time
+            let rawTravel = (nextStop && nextStop.travelInfo) ? nextStop.travelInfo : '';
+            let displayTravel = rawTravel;
+            if(rawTravel.includes("MIN")) {
+                let mins = parseInt(rawTravel);
+                if(!isNaN(mins)) displayTravel = formatDuration(mins);
+            }
+            let travelHTML = displayTravel ? `<div class="travel-tag">${displayTravel}</div>` : '';
+
+            // Delayed Time
+            let arrTimeHTML = pretty(stop.arrival);
+            let depTimeHTML = pretty(stop.depart);
+            let hasDelay = (delay > 0 && i >= startIdx && !isPassed && stopDay == curDay);
+
+            if(hasDelay) {
+                let estArr = minsToTime(timeToMins(stop.arrival) + delay);
+                let estDep = minsToTime(timeToMins(stop.depart) + delay);
+                arrTimeHTML = `<span class="t-old">${pretty(stop.arrival)}</span> <span class="t-val late">${estArr}</span>`;
+                depTimeHTML = `<span class="t-old">${pretty(stop.depart)}</span> <span class="t-val late">${estDep}</span>`;
+            }
+
+            let dayLabel = stopDay > 1 ? `<span style="font-size:0.6rem;background:#e0f2fe;color:#0284c7;padding:2px 5px;border-radius:4px;margin-left:5px;">DAY ${stopDay}</span>` : '';
+
+            // Stay Duration
+            let stopDur = timeToMins(stop.depart) - timeToMins(stop.arrival);
+            let stopTag = stopDur > 0 ? `<div class="stay-row"><span class="stay-tag">🛑 ${formatDuration(stopDur)} STOP</span></div>` : '';
+
+            if(stop.type === 'update') {
+                container.innerHTML += `
+                <div class="node ${status}">
+                    <div class="${lineClass}">${travelHTML}</div>
+                    <div class="dot" style="background:#f472b6; border-color:#fce7f3"></div>
+                    <div class="event-pill">
+                        <div class="ev-icon">🍔</div>
+                        <div>
+                            <div class="ev-main">${stop.name} ${dayLabel}</div>
+                            <div class="ev-sub">${pretty(stop.arrival)}</div>
+                        </div>
+                    </div>
+                </div>`;
+            } else {
+                let mapBtn = stop.link ? `<a href="${stop.link}" target="_blank" class="btn-icon map">📍 MAP</a>` : '';
+                let histBtn = stop.history ? `<div onclick="toggleHistory(${i})" class="btn-icon">📖 INFO</div>` : '';
+
+                let actHTML = '';
+                if(stop.activities) {
+                    actHTML = `<div class="tags">`;
+                    stop.activities.split(',').forEach(item => { if(item.trim()) actHTML += `<span class="tag">${item.trim()}</span>`; });
+                    actHTML += `</div>`;
+                }
+
+                let isExpanded = expandedHistory.has(i);
+                let histDisplay = isExpanded ? 'block' : 'none';
+                let histHTML = stop.history ? `<div id="hist-${i}" class="hist-box" style="display:${histDisplay}">${stop.history}</div>` : '';
+
+                container.innerHTML += `
+                    <div class="node ${status}">
+                        <div class="${lineClass}">${travelHTML}</div>
+                        <div class="dot"></div>
+                        <div class="card">
+                            <div class="card-head">
+                                <div><div class="title">${stop.name} ${dayLabel}</div><div class="sub">${stop.subName || ''}</div></div>
+                                <div class="actions">${mapBtn}${histBtn}</div>
+                            </div>
+                            ${stopTag}
+                            ${actHTML}${histHTML}
+                            <div class="time-grid">
+                                <div><span class="t-lbl">ARRIVAL</span><span class="t-val">${arrTimeHTML}</span></div>
+                                <div style="text-align:right"><span class="t-lbl">DEPART</span><span class="t-val" style="color:#ef4444">${depTimeHTML}</span></div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        });
+    }
+
+    // ==========================================
+    // 8. UTILS & ADMIN
+    // ==========================================
+    function checkLogin() {
+        if(localStorage.getItem('isAdmin') === 'true') {
+            document.getElementById('admin-modal').style.display = 'flex';
+        } else {
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+    }
+function attemptLogin() {
+        // Simple check: Is the typed password "Traveladmin"?
+        if(document.getElementById('login-pass').value === 'Traveladmin') {
+            localStorage.setItem('isAdmin', 'true');
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('admin-modal').style.display = 'flex';
+            document.getElementById('login-pass').value = '';
+        } else {
+            alert("Incorrect Password 🔒");
+        }
+    }
+    function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+    function logout() { localStorage.removeItem('isAdmin'); closeAdmin(); alert("Logged Out"); }
+    function closeAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
+
+    function setType(t) {
+        addType = t;
+        document.getElementById('tab-loc').className = t==='location' ? 'tab active' : 'tab';
+        document.getElementById('tab-upd').className = t==='update' ? 'tab active' : 'tab';
+        document.getElementById('loc-fields').style.display = t==='location'?'block':'none';
+    }
+
+    function useCurrentLoc() {
+        navigator.geolocation.getCurrentPosition(p => {
+            document.getElementById('adm-lat').value = p.coords.latitude.toFixed(6);
+            document.getElementById('adm-lng').value = p.coords.longitude.toFixed(6);
+        }, ()=>alert("Error"));
+    }
+
+    async function autoFillCoords() {
+        try {
+            let r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${document.getElementById('adm-name').value}`);
+            let d = await r.json();
+            if(d[0]) {
+                document.getElementById('adm-lat').value = d[0].lat;
+                document.getElementById('adm-lng').value = d[0].lon;
+            }
+        } catch(e){ alert("Error"); }
+    }
+
+    // 🔥 UPGRADED: EDIT & ADD FUNCTIONS 🔥
+    function editItem(i) {
+        editModeIndex = i;
+        const s = tripData.route[i];
+        
+        setType(s.type || 'location');
+        document.getElementById('adm-name').value = s.name;
+        document.getElementById('adm-arrival').value = s.arrival;
+        document.getElementById('adm-depart').value = s.depart;
+        document.getElementById('adm-day-num').value = s.day || 1;
+        document.getElementById('adm-subname').value = s.subName || '';
+        document.getElementById('adm-lat').value = s.lat || '';
+        document.getElementById('adm-lng').value = s.lng || '';
+        document.getElementById('adm-link').value = s.link || '';
+        document.getElementById('adm-activities').value = s.activities || '';
+        document.getElementById('adm-history').value = s.history || '';
+
+        const btn = document.getElementById('adm-submit-btn');
+        btn.innerText = "Update Existing Item";
+        btn.style.background = "#f59e0b";
+        
+        document.querySelector('.modal-body').scrollTo({ top: 400, behavior: 'smooth' });
+    }
+
+    function addItem() {
+        try {
+            let n = document.getElementById('adm-name').value;
+            let arr = document.getElementById('adm-arrival').value;
+            let dayNum = parseInt(document.getElementById('adm-day-num').value) || 1;
+
+            if(!n || !arr) return alert("Name & Arrival Req");
+
+            // Travel Info Logic
+            let travelInfo = '';
+            if(editModeIndex === -1 && tripData.route.length > 0) {
+                // If adding to end, calculate from last stop.
+                // If inserting, this is tricky, so we leave it empty or default.
+                let prev = tripData.route[tripData.route.length-1];
+                let diff = timeToMins(arr) - timeToMins(prev.depart);
+                if(dayNum > (prev.day||1)) {
+                    diff += (dayNum - (prev.day||1)) * 24 * 60;
+                }
+                if(diff > 0) travelInfo = formatDuration(diff);
+            } else if (editModeIndex !== -1) {
+                travelInfo = tripData.route[editModeIndex].travelInfo;
+            }
+
+            let link = document.getElementById('adm-link').value;
+            
+            // FIXED LINK GENERATOR
+            if(!link && addType==='location') link = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(n)}`;
+
+            const newItem = {
+                type: addType, name: n, subName: document.getElementById('adm-subname').value,
+                lat: document.getElementById('adm-lat').value, lng: document.getElementById('adm-lng').value,
+                link: link, activities: document.getElementById('adm-activities').value,
+                history: document.getElementById('adm-history').value,
+                arrival: arr, depart: document.getElementById('adm-depart').value,
+                travelInfo: travelInfo, day: dayNum
+            };
+
+            if(editModeIndex > -1) {
+                // EDIT EXISTING
+                tripData.route[editModeIndex] = newItem;
+                editModeIndex = -1;
+                const btn = document.getElementById('adm-submit-btn');
+                btn.innerText = "Save to Timeline";
+                btn.style.background = "var(--primary)";
+                document.getElementById('insert-container').style.display = 'block'; // Show insert again
+            } else {
+                // ADD NEW (INSERT LOGIC)
+                const insertIdx = parseInt(document.getElementById('adm-insert-after').value);
+                
+                if(insertIdx === -1) {
+                    tripData.route.push(newItem); // Add to End
+                } else {
+                    tripData.route.splice(insertIdx + 1, 0, newItem); // Insert in Middle
+                }
+            }
+
+            saveData();
+            document.querySelectorAll('.inp, textarea').forEach(i => i.value = '');
+            document.getElementById('adm-day-num').value = dayNum; // Keep day num
+            
+            // Reset dropdown to "End"
+            document.getElementById('adm-insert-after').value = "-1"; 
+            
+        } catch(e) {
+            alert("Error adding item: " + e.message);
+        }
+    }
+
+    function deleteItem(i) {
+        if(confirm("Delete this stop?")) {
+            tripData.route.splice(i, 1);
+            saveData();
+        }
+    }
+
+    function changeDay(delta) {
+        let newDay = (tripData.currentDay || 1) + delta;
+        if(newDay < 1) newDay = 1;
+        tripData.currentDay = newDay;
+        saveData();
+    }
+
+    function setDelay() {
+        tripData.delayMins = parseInt(document.getElementById('adm-delay').value);
+        tripData.delayStartIndex = parseInt(document.getElementById('adm-delay-start').value);
+        db.ref('tripData').set(tripData);
+        alert("Delay Updated");
+    }
+
+    function setManual() {
+        tripData.manualStatus = document.getElementById('adm-manual').value;
+        db.ref('tripData').set(tripData);
+        alert("Status Updated");
+    }
+
+    function setStartDate() {
+        tripData.startDate = document.getElementById('adm-start-date').value;
+        saveData();
+        alert("Start Date Saved!");
+    }
+
+function resetTrip() {
+    if(confirm("Delete all?")) db.ref('tripData').set({ route: [], manualStatus: "", delayMins: 0, delayStartIndex: 0, currentDay: 1 });
+}
+
+    function saveData() { db.ref('tripData').set(tripData); }
+
+    function toggleGPS() {
+        if (gpsWatchId) {
+            navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null;
+            db.ref('liveGPS').remove();
+            document.getElementById('btn-gps').className = "btn btn-gps";
+            document.getElementById('btn-gps').innerText = "📡 Start GPS Broadcast";
+        } else {
+            gpsWatchId = navigator.geolocation.watchPosition((pos) => {
+                db.ref('liveGPS').set({ lat: pos.coords.latitude, lng: pos.coords.longitude, speed: pos.coords.speed || 0, updatedAt: Date.now() });
+            }, null, { enableHighAccuracy: true });
+            document.getElementById('btn-gps').className = "btn btn-gps gps-on";
+            document.getElementById('btn-gps').innerText = "🛑 Stop GPS";
+        }
+    }
+
+    function toggleDock() { document.getElementById('dock').classList.toggle('open'); }
+    function sendWA(msg) { window.open(`https://wa.me/8867558762?text=${msg}`); toggleDock(); }
+    function toggleHistory(id) { expandedHistory.has(id) ? expandedHistory.delete(id) : expandedHistory.add(id); runLogicCheck(new Date()); }
+    function timeToMins(t) { if(!t) return 0; let [h, m] = t.split(':').map(Number); return h * 60 + m; }
+    function minsToTime(mins) { let h = Math.floor(mins / 60) % 24; let m = mins % 60; let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return `${h}:${String(m).padStart(2,'0')} ${ampm}`; }
+    function pretty(t) { if(!t) return ''; let [h,m]=t.split(':'); let am=h>=12?'PM':'AM'; h=h%12||12; return `${h}:${m} ${am}`; }
+    function distanceMeters(lat1, lon1, lat2, lon2) { const R = 6371e3; const φ1 = lat1 * Math.PI/180; const φ2 = lat2 * Math.PI/180; const Δφ = (lat2-lat1) * Math.PI/180; const Δλ = (lon2-lon1) * Math.PI/180; const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2); return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
+
+    function formatDuration(mins) {
+        if(typeof mins === 'string') mins = parseInt(mins) || 0;
+        let h = Math.floor(mins / 60);
+        let m = mins % 60;
+        if (h > 0) return `${h} HR ${m} MIN`;
+        return `${m} MIN`;
+    }
+
+    // ==========================================
+    // 9. DATABASE LISTENERS
+    // ==========================================
+    db.ref('liveGPS').on('value', snap => {
+        liveGPS = snap.val();
+        if(liveGPS && (Date.now() - liveGPS.updatedAt > 300000)) liveGPS = null;
+        runLogicCheck(new Date());
+    });
+
+    db.ref('tripData').on('value', snap => {
+        const val = snap.val();
+        tripData = val ? val : { route: [], manualStatus: "", delayMins: 0, delayStartIndex: 0, currentDay: 1 };
+        if(!tripData.route) tripData.route = [];
+const insertSel = document.getElementById('adm-insert-after');
+    insertSel.innerHTML = '<option value="-1">-- Add to End of List --</option>';
+    tripData.route.forEach((stop, i) => {
+        const op = document.createElement('option');
+        op.value = i;
+        op.innerText = `${i+1}. ${stop.name} (Day ${stop.day||1})`;
+        insertSel.appendChild(op);
+    });
+        document.getElementById('adm-manual').value = tripData.manualStatus || "";
+        document.getElementById('adm-delay').value = tripData.delayMins || 0;
+        document.getElementById('current-day-label').innerText = `DAY ${tripData.currentDay || 1}`;
+        document.getElementById('adm-start-date').value = tripData.startDate || "";
+
+        const select = document.getElementById('adm-delay-start');
+        select.innerHTML = '';
+        tripData.route.forEach((stop, i) => {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = `${i+1}. ${stop.name} (Day ${stop.day||1})`;
+            if(i == tripData.delayStartIndex) opt.selected = true;
+            select.appendChild(opt);
+        });
+
+        const list = document.getElementById('admin-list');
+        list.innerHTML = '';
+        tripData.route.forEach((s, i) => {
+            let typeLabel = s.type === 'update' ? '🍔' : '📍';
+            list.innerHTML += `
+                <div class="adm-item">
+                    <div class="adm-text">
+                        ${i+1}. ${s.name} ${typeLabel} 
+                        <span style="background:#e0f2fe;color:#0284c7;padding:2px 4px;border-radius:3px;">D${s.day||1}</span>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button onclick="editItem(${i})" style="padding:4px 8px; border-radius:6px; border:none; background:#3b82f6; color:white; font-size:0.7rem; font-weight:700;">EDIT</button>
+                        <button onclick="deleteItem(${i})" style="padding:4px 8px; border-radius:6px; border:none; background:#fee2e2; color:#ef4444; font-size:0.7rem; font-weight:700;">DEL</button>
+                    </div>
+                </div>`;
+        });
+
+        runLogicCheck(new Date());
+    });
+// ==========================================
+    // 10. SMART LINK PARSER (The Upgrade)
+    // ==========================================
+    const linkInput = document.getElementById('adm-link');
+    
+    // Listen for when you paste a link
+    linkInput.addEventListener('input', function() {
+        const url = this.value;
+        if(!url) return;
+
+        let lat = null, lng = null;
+
+        // Pattern 1: Standard URL (e.g. @12.9716,77.5946)
+        const atMatch = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (atMatch) {
+            lat = atMatch[1];
+            lng = atMatch[2];
+        }
+
+        // Pattern 2: Long URL (e.g. !3d12.9716!4d77.5946)
+        if (!lat) {
+            const dataMatch = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+            if (dataMatch) {
+                lat = dataMatch[1];
+                lng = dataMatch[2];
+            }
+        }
+
+        // Pattern 3: Search/Query URL (e.g. q=12.9716,77.5946)
+        if (!lat) {
+            const qMatch = url.match(/q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+            if (qMatch) {
+                lat = qMatch[1];
+                lng = qMatch[2];
+            }
+        }
+
+        // If we found coordinates, Auto-Fill them!
+        if (lat && lng) {
+            document.getElementById('adm-lat').value = lat;
+            document.getElementById('adm-lng').value = lng;
+            
+            // Visual feedback
+            linkInput.style.borderColor = "#22c55e"; // Turn border green
+            setTimeout(() => linkInput.style.borderColor = "#e2e8f0", 2000);
+            
+            // Optional: Auto-fetch address name if name is empty
+            if(!document.getElementById('adm-name').value) {
+                // We could try to guess name from URL, but usually not accurate enough.
+            }
+        }
+    });
+</script>
 </body>
 </html>
